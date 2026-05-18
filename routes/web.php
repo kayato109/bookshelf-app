@@ -17,20 +17,15 @@ use App\Http\Controllers\GenreController;
 |
 */
 
-Route::get('/', [BookController::class, 'index']);
+Route::get('/', [BookController::class, 'index'])->name('books.index');
+Route::get('/books', [BookController::class, 'index'])->name('books.index');
 
-// 書籍一覧（Fortify実装時にとりあえず追加）
-Route::get('/books', [BookController::class, 'index'])
-    ->name('books.index');
+Route::middleware('auth')->group(function () {
 
-// 書籍登録画面（Fortify実装時にとりあえず追加）
-Route::get('/books/create', [BookController::class, 'create'])
-    ->middleware('auth')
-    ->name('books.create');
+    Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
-// 書籍詳細（Fortify実装時にとりあえず追加）
-Route::get('/books/{book}', [BookController::class, 'show'])
-    ->name('books.show');
+});
 
 // ランキング（Fortify実装時にとりあえず追加）
 Route::get('/ranking', [RankingController::class, 'index'])

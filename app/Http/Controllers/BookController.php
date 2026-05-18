@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    // 書籍一覧(Fortify実装時にとりあえず追加)
+    // 書籍一覧
     public function index()
     {
         $books = Book::with(['genres'])
@@ -22,6 +22,7 @@ class BookController extends Controller
     {
         return view('books.create');
     }
+
 
     // 書籍詳細(Fortify実装時にとりあえず追加)
     public function show(Book $book)
