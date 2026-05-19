@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     // 書籍編集
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])
         ->name('books.edit');
+    Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 
     // 書籍削除
     Route::delete('/books/{book}', [BookController::class, 'destroy'])
