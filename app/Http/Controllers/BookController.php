@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Genre;
+use App\Http\Requests\StoreBookRequest;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -17,10 +19,32 @@ class BookController extends Controller
         return view('books.index', compact('books'));
     }
 
-    // 書籍登録画面(Fortify実装時にとりあえず追加)
+    // 書籍登録画面
     public function create()
     {
-        return view('books.create');
+        $genres = Genre::all();
+        return view('books.create', compact('genres'));
+    }
+
+    // 書籍登録処理
+    public function store(StoreBookRequest $request)
+    {
+        // 書籍作成
+        $book = Book::create([
+            'user_id' => auth()->id(),
+            'title' => $request->title,
+            'author' => $request->author,
+            'isbn' => $request->isbn,
+            'published_date' => $request->published_date,
+            'description' => $request->description,
+            'image_url' => $request->image_url,
+        ]);
+
+        // ジャンル紐付け
+        $book->genres()->sync($request->genres);
+
+        return redirect()->route('books.index')
+            ->with('success', '書籍を登録しました');
     }
 
 
