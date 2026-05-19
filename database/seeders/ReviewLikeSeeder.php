@@ -19,7 +19,7 @@ class ReviewLikeSeeder extends Seeder
                 ->random(rand(0, 3))
                 ->pluck('id');
 
-            $review->likedBy()->syncWithoutDetaching($likeUsers);
+            $review->likedByUsers()->syncWithoutDetaching($likeUsers);
         }
     }
 }
