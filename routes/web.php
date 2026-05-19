@@ -31,32 +31,29 @@ Route::middleware('auth')->group(function () {
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
 
     // 書籍編集
-    Route::get('/books/{book}/edit', [BookController::class, 'edit'])
-        ->name('books.edit');
+    Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 
     // 書籍削除
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
 
+    // レビュー投稿
+    Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // レビュー編集
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+
+    // レビュー削除
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+    // レビューいいね
+    Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
+
+
     // お気に入りトグル
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])
         ->name('favorites.toggle');
-
-    // レビュー投稿
-    Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])
-        ->name('reviews.store');
-
-    // レビューいいね
-    Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])
-        ->name('reviews.like');
-
-    // レビュー編集
-    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])
-        ->name('reviews.edit');
-
-    // レビュー削除
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])
-        ->name('reviews.destroy');
 
 });
 
