@@ -24,11 +24,35 @@ class BookController extends Controller
     }
 
 
-    // 書籍詳細(Fortify実装時にとりあえず追加)
+    // 書籍詳細
     public function show(Book $book)
     {
-        $book->load(['genres', 'reviews.user']);
-
+        $book->load([
+            'genres',
+            'reviews.user',
+        ]);
         return view('books.show', compact('book'));
+    }
+
+    //書籍編集
+    public function edit(Book $book)
+    {
+        $this->authorize('update', $book);
+
+        return view('books.edit', compact('book'));
+    }
+
+    //書籍削除
+    public function destroy(Book $book)
+    {
+        $this->authorize('delete', $book);
+
+        $book->reviews()->delete();
+        $book->favorites()->delete();
+        $book->genres()->detach();
+
+        $book->delete();
+
+        return redirect()->route('books.index')->with('success', '書籍を削除しました');
     }
 }

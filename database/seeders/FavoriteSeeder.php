@@ -15,7 +15,7 @@ class FavoriteSeeder extends Seeder
 
         foreach ($users as $user) {
             $favoriteBooks = $books->random(rand(3, 5))->pluck('id');
-            $user->favorites()->syncWithoutDetaching($favoriteBooks);
+            $user->favoriteBooks()->syncWithoutDetaching($favoriteBooks);
         }
     }
 }
