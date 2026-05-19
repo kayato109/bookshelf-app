@@ -97,10 +97,6 @@ class BookController extends Controller
     {
         $this->authorize('delete', $book);
 
-        $book->reviews()->delete();
-        $book->favorites()->delete();
-        $book->genres()->detach();
-
         $book->delete();
 
         return redirect()->route('books.index')->with('success', '書籍を削除しました');

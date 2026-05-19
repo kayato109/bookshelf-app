@@ -36,8 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 
     // 書籍削除
-    Route::delete('/books/{book}', [BookController::class, 'destroy'])
-        ->name('books.destroy');
+    Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
 
     // お気に入りトグル
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])
