@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Genre;
 use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -63,7 +64,32 @@ class BookController extends Controller
     {
         $this->authorize('update', $book);
 
-        return view('books.edit', compact('book'));
+        $genres = Genre::all();
+        $selectedGenres = $book->genres->pluck('id')->toArray();
+
+        return view('books.edit', compact('book', 'genres', 'selectedGenres'));
+    }
+
+    //書籍更新
+    public function update(UpdateBookRequest $request, Book $book)
+    {
+        $this->authorize('update', $book);
+
+        // 書籍情報更新
+        $book->update([
+            'title' => $request->title,
+            'author' => $request->author,
+            'isbn' => $request->isbn,
+            'published_date' => $request->published_date,
+            'description' => $request->description,
+            'image_url' => $request->image_url,
+        ]);
+
+        // ジャンル紐付け更新
+        $book->genres()->sync($request->genres);
+
+        return redirect()->route('books.show', $book)
+            ->with('success', '書籍を更新しました');
     }
 
     //書籍削除
