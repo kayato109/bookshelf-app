@@ -26,52 +26,56 @@ Route::get('/books', [BookController::class, 'index'])->name('books.index');
 //認証必須ルート
 Route::middleware('auth')->group(function () {
 
-    //書籍作成
+    //書籍作成画面
     Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
+    //書籍登録
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
-
-    // 書籍編集
+    //書籍編集画面
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
-
     //書籍更新
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
-
-    // 書籍削除
+    //書籍削除
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
 
-    // レビュー投稿
+    //レビュー登録
     Route::post('/books/{book}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-
-    // レビュー編集
+    //レビュー編集画面
     Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
-
     //レビュー更新
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
-
-    // レビュー削除
+    //レビュー削除
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
-
-    // レビューいいね
+    //レビューいいね
     Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
 
-    // お気に入り一覧
+    //お気に入り一覧画面
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
-
-    // お気に入りトグル
+    //お気に入りトグル
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+
+    //ジャンル一覧画面
+    Route::get('/genres', [GenreController::class, 'index'])->name('genres.index');
+    //ジャンル作成画面
+    Route::get('/genres/create', [GenreController::class, 'create'])->name('genres.create');
+    //ジャンル登録
+    Route::post('/genres', [GenreController::class, 'store'])->name('genres.store');
+    //ジャンル詳細画面
+    Route::get('/genres/{genre}', [GenreController::class, 'show'])->name('genres.show');
+    //ジャンル編集画面
+    Route::get('/genres/{genre}/edit', [GenreController::class, 'edit'])->name('genres.edit');
+    //ジャンル更新
+    Route::put('/genres/{genre}', [GenreController::class, 'update'])->name('genres.update');
+    //ジャンル削除
+    Route::delete('/genres/{genre}', [GenreController::class, 'destroy'])->name('genres.destroy');
 
 });
 
+//書籍詳細画面
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 // ランキング（Fortify実装時にとりあえず追加）
 Route::get('/ranking', [RankingController::class, 'index'])
     ->name('ranking.index');
-
-// ジャンル一覧（Fortify実装時にとりあえず追加）
-Route::get('/genres', [GenreController::class, 'index'])
-    ->middleware('auth')
-    ->name('genres.index');
 
 //ルートが見つからない場合リダイレクト(最後に記述のこと)
 Route::fallback(function () {
