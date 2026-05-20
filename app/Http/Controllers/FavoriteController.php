@@ -7,6 +7,18 @@ use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
 {
+    // お気に入り一覧
+    public function index()
+    {
+        $books = auth()->user()
+            ->favoriteBooks()
+            ->with('genres')
+            ->paginate(10);
+
+        return view('favorites.index', compact('books'));
+    }
+
+    //お気に入りトグル
     public function toggle(Book $book)
     {
         $user = auth()->user();
