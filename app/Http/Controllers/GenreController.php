@@ -11,7 +11,7 @@ class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::withCount('books')->paginate(10);
+        $genres = Genre::withCount('books')->get();
         return view('genres.index', compact('genres'));
     }
 
