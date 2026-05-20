@@ -73,9 +73,8 @@ Route::middleware('auth')->group(function () {
 //書籍詳細画面
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
-// ランキング（Fortify実装時にとりあえず追加）
-Route::get('/ranking', [RankingController::class, 'index'])
-    ->name('ranking.index');
+// ランキング画面
+Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
 //ルートが見つからない場合リダイレクト(最後に記述のこと)
 Route::fallback(function () {
