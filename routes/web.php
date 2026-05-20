@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
 
     // 書籍編集
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
+
+    //書籍更新
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
 
     // 書籍削除
@@ -42,6 +44,8 @@ Route::middleware('auth')->group(function () {
 
     // レビュー編集
     Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+
+    //レビュー更新
     Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
 
     // レビュー削除
@@ -50,10 +54,11 @@ Route::middleware('auth')->group(function () {
     // レビューいいね
     Route::post('/reviews/{review}/like', [ReviewLikeController::class, 'toggle'])->name('reviews.like');
 
+    // お気に入り一覧
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
     // お気に入りトグル
-    Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])
-        ->name('favorites.toggle');
+    Route::post('/books/{book}/favorites', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
 });
 
@@ -62,11 +67,6 @@ Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show')
 // ランキング（Fortify実装時にとりあえず追加）
 Route::get('/ranking', [RankingController::class, 'index'])
     ->name('ranking.index');
-
-// お気に入り一覧（Fortify実装時にとりあえず追加）
-Route::get('/favorites', [FavoriteController::class, 'index'])
-    ->middleware('auth')
-    ->name('favorites.index');
 
 // ジャンル一覧（Fortify実装時にとりあえず追加）
 Route::get('/genres', [GenreController::class, 'index'])
