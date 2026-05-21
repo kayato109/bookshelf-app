@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\IndexBookRequest;
+use App\Http\Requests\Api\V1\StoreBookRequest;
+use App\Http\Requests\Api\V1\UpdateBookRequest;
 use App\Http\Resources\Api\V1\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
@@ -42,5 +44,40 @@ class BookController extends Controller
         ]);
 
         return new BookResource($book);
+    }
+
+    public function store(StoreBookRequest $request)
+    {
+        $validated = $request->validated();
+
+        $book = Book::create($validated);
+
+        $book->genres()->attach($validated['genres']);
+
+        $book->load(['genres', 'reviews.user']);
+
+        return (new BookResource($book))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function update(UpdateBookRequest $request, Book $book)
+    {
+        $validated = $request->validated();
+
+        $book->update($validated);
+
+        $book->genres()->sync($validated['genres']);
+
+        $book->load(['genres', 'reviews.user']);
+
+        return new BookResource($book);
+    }
+
+    public function destroy(Book $book)
+    {
+        $book->delete();
+
+        return response()->json(null, 204);
     }
 }
