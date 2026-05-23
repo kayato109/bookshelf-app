@@ -20,8 +20,10 @@ class UpdateBookRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rules(): array
     {
+        $bookId = optional($this->route('book'))->id;
+
         return [
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
