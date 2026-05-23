@@ -1,0 +1,139 @@
+<?php
+
+namespace Tests\Feature\Reviews;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\Book;
+use App\Models\Review;
+use App\Models\User;
+
+class ReviewCrudTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /* ---------------------------------------------------------
+        レビュー投稿（POST /reviews）
+    --------------------------------------------------------- */
+    public function test_認証ユーザーはレビューを投稿できる()
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $response = $this->actingAs($user)->post("/books/{$book->id}/reviews", [
+            'rating' => 5,
+            'comment' => '最高の本でした！',
+        ]);
+
+        $response->assertRedirect("/books/{$book->id}");
+
+        $this->assertDatabaseHas('reviews', [
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'rating' => 5,
+            'comment' => '最高の本でした！',
+        ]);
+    }
+
+    public function test_未認証ユーザーはレビュー投稿できずログインへリダイレクト()
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->post("/books/{$book->id}/reviews", [
+            'rating' => 5,
+            'comment' => 'テスト',
+        ]);
+
+        $response->assertRedirect('/login');
+    }
+
+    /* ---------------------------------------------------------
+        レビュー編集画面（GET /reviews/{review}/edit）
+    --------------------------------------------------------- */
+    public function test_作成者はレビュー編集画面を表示できる()
+    {
+        $user = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get("/reviews/{$review->id}/edit");
+
+        $response->assertStatus(200);
+        $response->assertSee('レビューの編集');
+    }
+
+    public function test_作成者以外はレビュー編集画面にアクセスできず403()
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($other)->get("/reviews/{$review->id}/edit");
+
+        $response->assertStatus(403);
+    }
+
+    /* ---------------------------------------------------------
+        レビュー更新（PUT /reviews/{review}）
+    --------------------------------------------------------- */
+    public function test_作成者はレビューを更新できる()
+    {
+        $user = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->put("/reviews/{$review->id}", [
+            'rating' => 4,
+            'comment' => '更新後のコメント',
+        ]);
+
+        $response->assertRedirect("/books/{$review->book_id}");
+
+        $this->assertDatabaseHas('reviews', [
+            'id' => $review->id,
+            'rating' => 4,
+            'comment' => '更新後のコメント',
+        ]);
+    }
+
+    public function test_作成者以外はレビューを更新できず403()
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($other)->put("/reviews/{$review->id}", [
+            'rating' => 3,
+            'comment' => '不正更新',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /* ---------------------------------------------------------
+        レビュー削除（DELETE /reviews/{review}）
+    --------------------------------------------------------- */
+    public function test_作成者はレビューを削除できる()
+    {
+        $user = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->delete("/reviews/{$review->id}");
+
+        $response->assertRedirect("/books/{$review->book_id}");
+
+        $this->assertDatabaseMissing('reviews', [
+            'id' => $review->id,
+        ]);
+    }
+
+    public function test_作成者以外はレビューを削除できず403()
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        $review = Review::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($other)->delete("/reviews/{$review->id}");
+
+        $response->assertStatus(403);
+    }
+}
