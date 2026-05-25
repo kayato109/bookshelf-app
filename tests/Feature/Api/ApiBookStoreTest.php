@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Genre;
@@ -14,8 +13,8 @@ class ApiBookStoreTest extends TestCase
 
     public function test_書籍登録APIでレコードが作成され201が返る()
     {
-        $genre1 = Genre::factory()->create();
-        $genre2 = Genre::factory()->create();
+        $genre1 = Genre::factory()->create(['name' => 'ジャンルA']);
+        $genre2 = Genre::factory()->create(['name' => 'ジャンルB']);
 
         $payload = [
             'user_id' => User::factory()->create()->id,
@@ -42,11 +41,15 @@ class ApiBookStoreTest extends TestCase
     public function test_書籍登録API_バリデーションエラーで422が返る()
     {
         $payload = [
-            'title' => '', // 必須エラー
+            'title' => '',
         ];
 
         $response = $this->postJson('/api/v1/books', $payload);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['title'],
+            ]);
     }
 }

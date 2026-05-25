@@ -11,10 +11,13 @@ class ReviewSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
+        $users = User::pluck('name', 'id');
         $books = Book::all();
 
-        // ランダムレビュー文の候補
+        if ($users->isEmpty() || $books->isEmpty()) {
+            return;
+        }
+
         $reviewTemplates = [
             '「:title」を読んでとても考えさせられました。特に後半の展開が印象的です。（by :user）',
             'テンポよく読み進められて面白かったです。:title は期待以上でした！（by :user）',
@@ -28,20 +31,20 @@ class ReviewSeeder extends Seeder
             $reviewCount = rand(2, 4);
 
             for ($i = 0; $i < $reviewCount; $i++) {
-                $user = $users->random();
+                // ランダムユーザーを安全に取得
+                $userId = $users->keys()->random();
+                $userName = $users[$userId];
 
-                // ランダムテンプレートを取得
+                // テンプレート置換
                 $template = $reviewTemplates[array_rand($reviewTemplates)];
-
-                // :title と :user を置換
                 $comment = str_replace(
                     [':title', ':user'],
-                    [$book->title, $user->name],
+                    [$book->title, $userName],
                     $template
                 );
 
                 Review::create([
-                    'user_id' => $user->id,
+                    'user_id' => $userId,
                     'book_id' => $book->id,
                     'rating' => rand(3, 5),
                     'comment' => $comment,

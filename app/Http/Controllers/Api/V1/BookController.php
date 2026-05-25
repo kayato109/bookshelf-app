@@ -8,7 +8,6 @@ use App\Http\Requests\Api\V1\StoreBookRequest;
 use App\Http\Requests\Api\V1\UpdateBookRequest;
 use App\Http\Resources\Api\V1\BookResource;
 use App\Models\Book;
-use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
@@ -38,10 +37,7 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
-        $book->load([
-            'genres',
-            'reviews.user',
-        ]);
+        $book->load(['genres', 'reviews.user']);
 
         return new BookResource($book);
     }

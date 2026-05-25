@@ -3,7 +3,6 @@
 namespace Tests\Feature\Genres;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Genre;
@@ -23,14 +22,15 @@ class GenreCrudTest extends TestCase
 
         $response = $this->actingAs($user)->get('/genres');
 
-        $response->assertStatus(200);
-        $response->assertSee('宇宙');
+        $response->assertStatus(200)
+            ->assertSeeText('宇宙');
     }
 
     public function test_未認証ユーザーはジャンル一覧にアクセスできずログインへリダイレクト()
     {
         $response = $this->get('/genres');
-        $response->assertRedirect('/login');
+
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -54,7 +54,8 @@ class GenreCrudTest extends TestCase
     public function test_未認証ユーザーはジャンル登録できずログインへリダイレクト()
     {
         $response = $this->post('/genres', []);
-        $response->assertRedirect('/login');
+
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -67,8 +68,8 @@ class GenreCrudTest extends TestCase
 
         $response = $this->actingAs($user)->get("/genres/{$genre->id}");
 
-        $response->assertStatus(200);
-        $response->assertSee('宇宙');
+        $response->assertStatus(200)
+            ->assertSeeText('宇宙');
     }
 
     public function test_未認証ユーザーはジャンル詳細にアクセスできずログインへリダイレクト()
@@ -77,7 +78,7 @@ class GenreCrudTest extends TestCase
 
         $response = $this->get("/genres/{$genre->id}");
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -108,7 +109,7 @@ class GenreCrudTest extends TestCase
             'name' => '不正更新',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -151,6 +152,6 @@ class GenreCrudTest extends TestCase
 
         $response = $this->delete("/genres/{$genre->id}");
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 }

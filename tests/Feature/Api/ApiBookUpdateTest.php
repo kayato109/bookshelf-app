@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\User;
@@ -34,9 +33,7 @@ class ApiBookUpdateTest extends TestCase
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
         $response->assertStatus(200)
-            ->assertJsonFragment([
-                'title' => '更新後のタイトル',
-            ]);
+            ->assertJsonPath('data.title', '更新後のタイトル');
 
         $this->assertDatabaseHas('books', [
             'id' => $book->id,
@@ -54,6 +51,10 @@ class ApiBookUpdateTest extends TestCase
 
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['title'],
+            ]);
     }
 }

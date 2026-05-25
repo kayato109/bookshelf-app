@@ -3,7 +3,6 @@
 namespace Tests\Feature\Books;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Favorite;
@@ -53,7 +52,7 @@ class BookCrudTest extends TestCase
     public function test_未認証ユーザーは書籍を登録できずログインへリダイレクト()
     {
         $response = $this->post('/books', []);
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------

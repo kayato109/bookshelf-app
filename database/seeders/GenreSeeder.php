@@ -9,7 +9,7 @@ class GenreSeeder extends Seeder
 {
     public function run(): void
     {
-        $genres = [
+        collect([
             '小説',
             'ビジネス',
             '技術書',
@@ -20,10 +20,8 @@ class GenreSeeder extends Seeder
             '芸術',
             '料理',
             '旅行',
-        ];
-
-        foreach ($genres as $name) {
+        ])->each(function (string $name) {
             Genre::firstOrCreate(['name' => $name]);
-        }
+        });
     }
 }

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Books;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Review;
@@ -21,9 +20,9 @@ class BookShowTest extends TestCase
         $response = $this->get("/books/{$book->id}");
 
         $response->assertStatus(200);
-        $response->assertSee('詳細テスト本');
-        $response->assertSee('最良');
-        $response->assertSee('普通');
-        $response->assertSee('4'); // 平均評価
+        $response->assertSeeText('詳細テスト本');
+        $response->assertSeeText('最良');
+        $response->assertSeeText('普通');
+        $response->assertSee('4');
     }
 }

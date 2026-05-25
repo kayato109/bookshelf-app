@@ -10,16 +10,23 @@ class ReviewLikeSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
+        $users = User::pluck('id');
         $reviews = Review::all();
 
-        foreach ($reviews as $review) {
-            $likeUsers = $users
-                ->where('id', '!=', $review->user_id)
-                ->random(rand(0, 3))
-                ->pluck('id');
+        if ($users->isEmpty() || $reviews->isEmpty()) {
+            return;
+        }
 
-            $review->likedByUsers()->syncWithoutDetaching($likeUsers);
+        foreach ($reviews as $review) {
+            // レビュー投稿者以外のユーザーに限定
+            $likeUserIds = $users
+                ->reject(fn($id) => $id === $review->user_id)
+                ->shuffle()
+                ->take(rand(0, 3));
+
+            if ($likeUserIds->isNotEmpty()) {
+                $review->likedByUsers()->syncWithoutDetaching($likeUserIds);
+            }
         }
     }
 }

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 
@@ -28,6 +27,9 @@ class ApiBookShowTest extends TestCase
     {
         $response = $this->getJson('/api/v1/books/999999');
 
-        $response->assertStatus(404);
+        $response->assertStatus(404)
+            ->assertJson([
+                'error' => '書籍が見つかりませんでした。',
+            ]);
     }
 }

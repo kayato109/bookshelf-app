@@ -6,7 +6,6 @@ use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,16 +18,16 @@ class UpdateBookRequestTest extends TestCase
         $genre = Genre::factory()->create();
         $book = Book::factory()->create(['isbn' => '1234567890123']);
 
-        Route::put('/books/{book}', function () {})->name('books.update');
-
         $request = new UpdateBookRequest();
 
-        $route = Route::getRoutes()->getByName('books.update');
-        $route->bind($request);
-        $route->setParameter('book', $book);
-
-        $request->setRouteResolver(function () use ($route) {
-            return $route;
+        $request->setRouteResolver(function () use ($book) {
+            return new class ($book) {
+                public function __construct(private $book)
+                {}
+                public function parameter($key)
+                {
+                    return $this->book; }
+            };
         });
 
         $data = [
@@ -41,7 +40,7 @@ class UpdateBookRequestTest extends TestCase
             'genres' => [$genre->id],
         ];
 
-        $validator = Validator::make($data, $request->rules(), [], $request->attributes());
+        $validator = Validator::make($data, $request->rules(), $request->messages());
 
         $this->assertFalse($validator->fails());
     }

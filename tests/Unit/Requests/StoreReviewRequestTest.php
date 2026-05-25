@@ -14,7 +14,7 @@ class StoreReviewRequestTest extends TestCase
     private function validate(array $data)
     {
         $request = new StoreReviewRequest();
-        return Validator::make($data, $request->rules(), [], $request->attributes());
+        return Validator::make($data, $request->rules(), $request->messages());
     }
 
     public function test_ratingが1から5以外はエラー()

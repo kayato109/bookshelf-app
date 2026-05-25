@@ -27,10 +27,11 @@ class ApiBookIndexTest extends TestCase
             ])
             ->assertJsonFragment([
                 'title' => 'PHPの教科書',
-            ])
-            ->assertJsonMissing([
-                'title' => 'Laravel入門',
             ]);
+
+        $this->assertFalse(
+            collect($response->json('data'))->contains(fn($b) => $b['title'] === 'Laravel入門')
+        );
     }
 
     public function test_書籍一覧API_バリデーションエラーで422が返る()

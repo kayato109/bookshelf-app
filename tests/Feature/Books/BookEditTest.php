@@ -3,7 +3,6 @@
 namespace Tests\Feature\Books;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\User;
@@ -19,8 +18,8 @@ class BookEditTest extends TestCase
 
         $response = $this->actingAs($user)->get("/books/{$book->id}/edit");
 
-        $response->assertStatus(200);
-        $response->assertSee('書籍の編集');
+        $response->assertStatus(200)
+            ->assertSeeText('書籍の編集');
     }
 
     public function test_作成者以外は403()

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Requests;
 
 use App\Http\Requests\StoreBookRequest;
+use App\Models\Genre;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,7 +15,7 @@ class StoreBookRequestTest extends TestCase
     private function validate(array $data)
     {
         $request = new StoreBookRequest();
-        return Validator::make($data, $request->rules(), [], $request->attributes());
+        return Validator::make($data, $request->rules(), [], $request->messages());
     }
 
     public function test_必須項目が不足している場合はエラーになる()
@@ -26,6 +27,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('author', $validator->errors()->messages());
         $this->assertArrayHasKey('isbn', $validator->errors()->messages());
         $this->assertArrayHasKey('published_date', $validator->errors()->messages());
+        $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 
     public function test_ISBNが13桁でない場合はエラー()
@@ -56,5 +58,31 @@ class StoreBookRequestTest extends TestCase
 
         $this->assertTrue($validator->fails());
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
+    }
+
+    public function test_genresの要素が存在しないIDならエラー()
+    {
+        $validator = $this->validate([
+            'genres' => [999],
+        ]);
+
+        $this->assertTrue($validator->fails());
+        $this->assertArrayHasKey('genres.0', $validator->errors()->messages());
+    }
+
+    public function test_正しいデータならバリデーション成功()
+    {
+        $genre1 = Genre::factory()->create(['name' => 'ジャンルA']);
+        $genre2 = Genre::factory()->create(['name' => 'ジャンルB']);
+
+        $validator = $this->validate([
+            'title' => 'タイトル',
+            'author' => '著者',
+            'isbn' => '1234567890123',
+            'published_date' => '2024-01-01',
+            'genres' => [$genre1->id, $genre2->id],
+        ]);
+
+        $this->assertFalse($validator->fails());
     }
 }

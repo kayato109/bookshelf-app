@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Review;
 
 class ReviewLikeController extends Controller
 {
     public function toggle(Review $review)
     {
-        $user = auth()->user();
+        $userId = auth()->id();
 
-        if ($review->likes()->where('user_id', $user->id)->exists()) {
-            $review->likes()->where('user_id', $user->id)->delete();
+        $liked = $review->likes()
+            ->where('user_id', $userId)
+            ->exists();
+
+        if ($liked) {
+            $review->likes()->where('user_id', $userId)->delete();
         } else {
-            $review->likes()->create(['user_id' => $user->id]);
+            $review->likes()->create(['user_id' => $userId]);
         }
 
         return back();
     }
-
 }

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Books;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Genre;
@@ -28,8 +27,8 @@ class BookIndexTest extends TestCase
 
         // Assert
         $response->assertStatus(200);
-        $response->assertSee('テスト本');
-        $response->assertSee('テスト著者');
-        $response->assertSee('宇宙');
+        $response->assertSeeText('テスト本');
+        $response->assertSeeText('テスト著者');
+        $response->assertSeeText('宇宙');
     }
 }

@@ -21,8 +21,8 @@ class ReviewFactory extends Factory
         return [
             'book_id' => Book::factory(),
             'user_id' => User::factory(),
-            'rating' => $this->faker->numberBetween(1, 5),
-            'comment' => $this->faker->text(100),
+            'rating' => fake()->numberBetween(1, 5),
+            'comment' => fake()->text(100),
         ];
     }
 }
