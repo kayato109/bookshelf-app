@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Book;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Book>
+ * @extends Factory<Book>
  */
 class BookFactory extends Factory
 {
@@ -19,12 +20,12 @@ class BookFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'title' => $this->faker->sentence(3),
-            'author' => $this->faker->name(),
-            'isbn' => $this->faker->unique()->isbn13(),
-            'published_date' => $this->faker->date(),
-            'description' => $this->faker->text(200),
-            'image_url' => $this->faker->imageUrl(),
+            'title' => fake()->sentence(3),
+            'author' => fake()->name(),
+            'isbn' => fake()->unique()->isbn13(),
+            'published_date' => fake()->date(),
+            'description' => fake()->text(200),
+            'image_url' => fake()->imageUrl(),
         ];
     }
 }

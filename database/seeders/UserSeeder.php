@@ -10,15 +10,13 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = [
+        collect([
             ['name' => '山田太郎', 'email' => 'yamada@example.com'],
             ['name' => '鈴木花子', 'email' => 'suzuki@example.com'],
             ['name' => '田中一郎', 'email' => 'tanaka@example.com'],
             ['name' => '佐藤美咲', 'email' => 'sato@example.com'],
             ['name' => '高橋健太', 'email' => 'takahashi@example.com'],
-        ];
-
-        foreach ($users as $user) {
+        ])->each(function (array $user) {
             User::firstOrCreate(
                 ['email' => $user['email']],
                 [
@@ -26,6 +24,6 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('password'),
                 ]
             );
-        }
+        });
     }
 }

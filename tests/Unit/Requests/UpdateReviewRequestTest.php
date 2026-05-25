@@ -3,8 +3,8 @@
 namespace Tests\Unit\Requests;
 
 use App\Http\Requests\UpdateReviewRequest;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class UpdateReviewRequestTest extends TestCase
@@ -13,8 +13,9 @@ class UpdateReviewRequestTest extends TestCase
 
     private function validate(array $data)
     {
-        $request = new UpdateReviewRequest();
-        return Validator::make($data, $request->rules(), [], $request->attributes());
+        $request = new UpdateReviewRequest;
+
+        return Validator::make($data, $request->rules(), $request->messages());
     }
 
     public function test_ratingが1から5以外はエラー()

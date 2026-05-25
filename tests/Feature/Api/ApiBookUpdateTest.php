@@ -2,18 +2,17 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\Book;
-use App\Models\User;
 use App\Models\Genre;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ApiBookUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_書籍更新APIで更新され200が返る()
+    public function test_書籍更新_ap_iで更新され200が返る()
     {
         $book = Book::factory()->create();
 
@@ -34,9 +33,7 @@ class ApiBookUpdateTest extends TestCase
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
         $response->assertStatus(200)
-            ->assertJsonFragment([
-                'title' => '更新後のタイトル',
-            ]);
+            ->assertJsonPath('data.title', '更新後のタイトル');
 
         $this->assertDatabaseHas('books', [
             'id' => $book->id,
@@ -44,7 +41,7 @@ class ApiBookUpdateTest extends TestCase
         ]);
     }
 
-    public function test_書籍更新API_バリデーションエラーで422が返る()
+    public function test_書籍更新_ap_i_バリデーションエラーで422が返る()
     {
         $book = Book::factory()->create();
 
@@ -54,6 +51,10 @@ class ApiBookUpdateTest extends TestCase
 
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['title'],
+            ]);
     }
 }

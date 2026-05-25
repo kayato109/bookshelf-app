@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\ReviewLikes;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Book;
 use App\Models\Review;
 use App\Models\ReviewLike;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ReviewLikeTest extends TestCase
 {
@@ -40,7 +38,7 @@ class ReviewLikeTest extends TestCase
 
         $response = $this->post("/reviews/{$review->id}/like");
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -78,6 +76,7 @@ class ReviewLikeTest extends TestCase
 
     /* ---------------------------------------------------------
         同じユーザーが同じレビューに複数いいねできない
+        → トグルなので2回目は解除される
     --------------------------------------------------------- */
     public function test_同じレビューに複数回いいねできない()
     {

@@ -2,16 +2,15 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\Book;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ApiBookIndexTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_書籍一覧APIがJSONを返し検索とページネーションが機能する()
+    public function test_書籍一覧_ap_iが_jso_nを返し検索とページネーションが機能する()
     {
         Book::factory()->create(['title' => 'Laravel入門']);
         Book::factory()->create(['title' => 'PHPの教科書']);
@@ -27,13 +26,14 @@ class ApiBookIndexTest extends TestCase
             ])
             ->assertJsonFragment([
                 'title' => 'PHPの教科書',
-            ])
-            ->assertJsonMissing([
-                'title' => 'Laravel入門',
             ]);
+
+        $this->assertFalse(
+            collect($response->json('data'))->contains(fn ($b) => $b['title'] === 'Laravel入門')
+        );
     }
 
-    public function test_書籍一覧API_バリデーションエラーで422が返る()
+    public function test_書籍一覧_ap_i_バリデーションエラーで422が返る()
     {
         $response = $this->getJson('/api/v1/books?page=abc');
 

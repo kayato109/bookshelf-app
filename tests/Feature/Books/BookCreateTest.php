@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Books;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BookCreateTest extends TestCase
 {
@@ -17,14 +16,14 @@ class BookCreateTest extends TestCase
 
         $response = $this->actingAs($user)->get('/books/create');
 
-        $response->assertStatus(200);
-        $response->assertSee('書籍登録');
+        $response->assertStatus(200)
+            ->assertSeeText('書籍登録');
     }
 
     public function test_未認証ユーザーはログインへリダイレクトされる()
     {
         $response = $this->get('/books/create');
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 }

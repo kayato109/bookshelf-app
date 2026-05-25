@@ -2,10 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AuthRedirectTest extends TestCase
 {
@@ -15,7 +14,7 @@ class AuthRedirectTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/login');
+        $response = $this->actingAs($user)->get(route('login'));
 
         $response->assertRedirect('/');
     }

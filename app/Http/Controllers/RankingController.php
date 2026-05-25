@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Book;
 
 class RankingController extends Controller
@@ -16,6 +15,6 @@ class RankingController extends Controller
             ->limit(10)
             ->get();
 
-        return view('ranking.index', compact('rankedBooks'));
+        return view('ranking.index', ['rankedBooks' => $rankedBooks]);
     }
 }

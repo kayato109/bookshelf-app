@@ -2,11 +2,10 @@
 
 namespace Tests\Feature\Ranking;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Review;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class RankingTest extends TestCase
 {
@@ -27,11 +26,9 @@ class RankingTest extends TestCase
     --------------------------------------------------------- */
     public function test_レビュー数が多い本がランキングに表示される()
     {
-        // レビュー数が多い本
         $book1 = Book::factory()->create(['title' => 'レビュー多い本']);
         Review::factory()->count(5)->create(['book_id' => $book1->id]);
 
-        // レビュー数が少ない本
         $book2 = Book::factory()->create(['title' => 'レビュー少ない本']);
         Review::factory()->count(1)->create(['book_id' => $book2->id]);
 
@@ -39,11 +36,8 @@ class RankingTest extends TestCase
 
         $response->assertStatus(200);
 
-        // 多い本が表示される
-        $response->assertSee('レビュー多い本');
-
-        // 少ない本も表示されるが、順位はコントローラ側の実装次第
-        $response->assertSee('レビュー少ない本');
+        $response->assertSeeText('レビュー多い本');
+        $response->assertSeeText('レビュー少ない本');
     }
 
     /* ---------------------------------------------------------
@@ -52,33 +46,22 @@ class RankingTest extends TestCase
     public function test_ランキングが平均評価順で並んでいる()
     {
         $bookA = Book::factory()->create(['title' => '本A']);
-        Review::factory()->create([
-            'book_id' => $bookA->id,
-            'rating' => 5,
-        ]);
+        Review::factory()->create(['book_id' => $bookA->id, 'rating' => 5]);
 
         $bookB = Book::factory()->create(['title' => '本B']);
-        Review::factory()->create([
-            'book_id' => $bookB->id,
-            'rating' => 3,
-        ]);
+        Review::factory()->create(['book_id' => $bookB->id, 'rating' => 3]);
 
         $bookC = Book::factory()->create(['title' => '本C']);
-        Review::factory()->create([
-            'book_id' => $bookC->id,
-            'rating' => 1,
-        ]);
+        Review::factory()->create(['book_id' => $bookC->id, 'rating' => 1]);
 
         $response = $this->get('/ranking');
 
         $response->assertStatus(200);
 
-        // 平均評価が高い順に並んでいること
         $response->assertSeeInOrder([
             '本A', // 5.0
             '本B', // 3.0
             '本C', // 1.0
         ]);
     }
-
 }

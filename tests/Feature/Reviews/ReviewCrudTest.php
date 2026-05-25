@@ -2,12 +2,11 @@
 
 namespace Tests\Feature\Reviews;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ReviewCrudTest extends TestCase
 {
@@ -45,7 +44,7 @@ class ReviewCrudTest extends TestCase
             'comment' => 'テスト',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     /* ---------------------------------------------------------
@@ -58,8 +57,8 @@ class ReviewCrudTest extends TestCase
 
         $response = $this->actingAs($user)->get("/reviews/{$review->id}/edit");
 
-        $response->assertStatus(200);
-        $response->assertSee('レビューの編集');
+        $response->assertStatus(200)
+            ->assertSeeText('レビューの編集');
     }
 
     public function test_作成者以外はレビュー編集画面にアクセスできず403()

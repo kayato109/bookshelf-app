@@ -1,29 +1,33 @@
 <?php
 
 return [
-    'required' => ':attributeを入力してください',
-    'email' => ':attributeはメール形式で入力してください',
-    'string' => ':attributeは文字列で入力してください',
-    'integer' => ':attributeは整数で入力してください',
+    'required' => ':attribute を入力してください',
+    'email' => ':attribute はメール形式で入力してください',
+    'string' => ':attribute は文字列で入力してください',
+    'integer' => ':attribute は整数で入力してください',
+
     'max' => [
-        'string' => ':attributeは:max文字以内で入力してください',
-        'numeric' => ':attributeは:max以下で入力してください',
+        'string' => ':attribute は :max 文字以内で入力してください',
+        'numeric' => ':attribute は :max 以下で入力してください',
     ],
+
     'min' => [
-        'string' => ':attributeは:min文字以上で入力してください',
-        'numeric' => ':attributeは:min以上で入力してください',
+        'string' => ':attribute は :min 文字以上で入力してください',
+        'numeric' => ':attribute は :min 以上で入力してください',
     ],
+
     'size' => [
-        'string' => ':attributeは:size桁で入力してください',
+        'string' => ':attribute は :size 桁で入力してください',
     ],
+
     'confirmed' => 'パスワードと一致しません',
 
-    'date' => ':attributeは有効な日付形式で入力してください',
-    'url' => ':attributeは正しい形式で入力してください',
-    'unique' => '入力された:attributeは既に登録されています',
-    'exists' => '選択された:attributeが存在しません',
+    'date' => ':attribute は有効な日付形式で入力してください',
+    'url' => ':attribute は正しい形式で入力してください',
+    'unique' => '入力された :attribute は既に登録されています',
+    'exists' => '選択された :attribute が存在しません',
 
-    'array' => ':attributeは配列で入力してください',
+    'array' => ':attribute は配列で入力してください',
 
     'attributes' => [
         // Fortify
