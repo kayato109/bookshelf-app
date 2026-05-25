@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Books;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class BookCreateTest extends TestCase
 {

@@ -3,8 +3,8 @@
 namespace Tests\Unit\Requests;
 
 use App\Http\Requests\StoreReviewRequest;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class StoreReviewRequestTest extends TestCase
@@ -13,7 +13,8 @@ class StoreReviewRequestTest extends TestCase
 
     private function validate(array $data)
     {
-        $request = new StoreReviewRequest();
+        $request = new StoreReviewRequest;
+
         return Validator::make($data, $request->rules(), $request->messages());
     }
 

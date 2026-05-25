@@ -2,17 +2,17 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Book;
+use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Book;
-use App\Models\User;
-use App\Models\Genre;
 
 class ApiBookUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_書籍更新APIで更新され200が返る()
+    public function test_書籍更新_ap_iで更新され200が返る()
     {
         $book = Book::factory()->create();
 
@@ -41,7 +41,7 @@ class ApiBookUpdateTest extends TestCase
         ]);
     }
 
-    public function test_書籍更新API_バリデーションエラーで422が返る()
+    public function test_書籍更新_ap_i_バリデーションエラーで422が返る()
     {
         $book = Book::factory()->create();
 

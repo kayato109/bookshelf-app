@@ -2,18 +2,18 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\Book;
+use App\Models\Favorite;
 use App\Models\Genre;
 use App\Models\Review;
-use App\Models\Favorite;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ApiBookDeleteTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_書籍削除APIで削除され204が返る()
+    public function test_書籍削除_ap_iで削除され204が返る()
     {
         $book = Book::factory()->create();
 
@@ -33,7 +33,7 @@ class ApiBookDeleteTest extends TestCase
         $this->assertDatabaseMissing('book_genre', ['book_id' => $book->id]);
     }
 
-    public function test_書籍削除API_存在しないIDで404が返る()
+    public function test_書籍削除_ap_i_存在しない_i_dで404が返る()
     {
         $response = $this->deleteJson('/api/v1/books/999999');
 

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Genres;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class GenreCrudTest extends TestCase
 {

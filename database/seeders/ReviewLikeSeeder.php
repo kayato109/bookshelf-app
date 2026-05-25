@@ -20,7 +20,7 @@ class ReviewLikeSeeder extends Seeder
         foreach ($reviews as $review) {
             // レビュー投稿者以外のユーザーに限定
             $likeUserIds = $users
-                ->reject(fn($id) => $id === $review->user_id)
+                ->reject(fn ($id) => $id === $review->user_id)
                 ->shuffle()
                 ->take(rand(0, 3));
 

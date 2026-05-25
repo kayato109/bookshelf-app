@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
 {
@@ -18,7 +17,7 @@ class FavoriteController extends Controller
         return view('favorites.index', compact('books'));
     }
 
-    //お気に入りトグル
+    // お気に入りトグル
     public function toggle(Book $book)
     {
         $user = auth()->user();

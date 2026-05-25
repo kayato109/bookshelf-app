@@ -20,4 +20,3 @@ class Genre extends Model
             ->withTimestamps();
     }
 }
-

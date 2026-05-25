@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class AuthRedirectTest extends TestCase
 {
@@ -18,5 +18,4 @@ class AuthRedirectTest extends TestCase
 
         $response->assertRedirect('/');
     }
-
 }

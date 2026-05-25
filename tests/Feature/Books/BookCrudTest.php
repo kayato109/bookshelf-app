@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Books;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Favorite;
 use App\Models\Genre;
 use App\Models\Review;
 use App\Models\ReviewLike;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BookCrudTest extends TestCase
 {

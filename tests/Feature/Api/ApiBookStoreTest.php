@@ -2,16 +2,16 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Genre;
 
 class ApiBookStoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_書籍登録APIでレコードが作成され201が返る()
+    public function test_書籍登録_ap_iでレコードが作成され201が返る()
     {
         $genre1 = Genre::factory()->create(['name' => 'ジャンルA']);
         $genre2 = Genre::factory()->create(['name' => 'ジャンルB']);
@@ -38,7 +38,7 @@ class ApiBookStoreTest extends TestCase
         ]);
     }
 
-    public function test_書籍登録API_バリデーションエラーで422が返る()
+    public function test_書籍登録_ap_i_バリデーションエラーで422が返る()
     {
         $payload = [
             'title' => '',

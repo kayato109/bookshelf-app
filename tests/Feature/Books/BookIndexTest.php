@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Books;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Genre;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BookIndexTest extends TestCase
 {

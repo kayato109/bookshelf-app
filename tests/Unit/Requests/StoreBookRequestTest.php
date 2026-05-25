@@ -4,8 +4,8 @@ namespace Tests\Unit\Requests;
 
 use App\Http\Requests\StoreBookRequest;
 use App\Models\Genre;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Validator;
 use Tests\TestCase;
 
 class StoreBookRequestTest extends TestCase
@@ -14,7 +14,8 @@ class StoreBookRequestTest extends TestCase
 
     private function validate(array $data)
     {
-        $request = new StoreBookRequest();
+        $request = new StoreBookRequest;
+
         return Validator::make($data, $request->rules(), [], $request->messages());
     }
 
@@ -30,7 +31,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 
-    public function test_ISBNが13桁でない場合はエラー()
+    public function test_isb_nが13桁でない場合はエラー()
     {
         $validator = $this->validate([
             'isbn' => '123',
@@ -40,7 +41,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('isbn', $validator->errors()->messages());
     }
 
-    public function test_image_urlが不正なURLならエラー()
+    public function test_image_urlが不正な_ur_lならエラー()
     {
         $validator = $this->validate([
             'image_url' => 'invalid-url',
@@ -60,7 +61,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 
-    public function test_genresの要素が存在しないIDならエラー()
+    public function test_genresの要素が存在しない_i_dならエラー()
     {
         $validator = $this->validate([
             'genres' => [999],

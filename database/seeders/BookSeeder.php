@@ -6,7 +6,6 @@ use App\Models\Book;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Collection;
 
 class BookSeeder extends Seeder
 {
@@ -14,7 +13,7 @@ class BookSeeder extends Seeder
     {
         $user = User::first();
 
-        if (!$user) {
+        if (! $user) {
             return;
         }
 
@@ -31,12 +30,12 @@ class BookSeeder extends Seeder
                     'author' => $data['author'],
                     'published_date' => $data['published_date'],
                     'description' => $data['description'],
-                    'image_url' => "https://placehold.co/200x300/e2e8f0/475569?text=" . ($index + 1),
+                    'image_url' => 'https://placehold.co/200x300/e2e8f0/475569?text='.($index + 1),
                 ]
             );
 
             $genreIds = collect($data['genres'])
-                ->map(fn($name) => $allGenres[$name] ?? null)
+                ->map(fn ($name) => $allGenres[$name] ?? null)
                 ->filter()
                 ->values();
 
