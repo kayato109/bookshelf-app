@@ -6,6 +6,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -65,16 +66,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/genres/{genre}/edit', [GenreController::class, 'edit'])->name('genres.edit');
     Route::put('/genres/{genre}', [GenreController::class, 'update'])->name('genres.update');
     Route::delete('/genres/{genre}', [GenreController::class, 'destroy'])->name('genres.destroy');
+
+    /**
+     * マイ読書レポート
+     */
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
 });
 
 // 書籍詳細（公開）・・・認証ルートの後
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 //仮ルート後で直す必要あり
-Route::get('/reports', function () {
-    return 'レポート画面（仮）';
-})->name('reports.index');
-
 Route::get('/reading-plans', function () {
     return '読書計画一覧（仮）';
 })->name('reading-plans.index');
