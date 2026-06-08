@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IndexBookRequest;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
 use App\Models\Book;
@@ -11,14 +12,64 @@ use Illuminate\Support\Facades\Http;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(IndexBookRequest $request)
     {
-        $books = Book::with('genres')
-            ->withAvg('reviews', 'rating')
-            ->paginate(10);
+        $query = Book::with(['genres'])
+            ->withAvg('reviews', 'rating');
 
-        return view('books.index', ['books' => $books]);
+        // keyword（title / author 部分一致）
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'LIKE', "%{$keyword}%")
+                    ->orWhere('author', 'LIKE', "%{$keyword}%");
+            });
+        }
+
+        // genre（多対多）
+        if ($request->filled('genre')) {
+            $genreId = $request->genre;
+
+            // genre が存在する場合のみフィルタ適用
+            if (\App\Models\Genre::where('id', $genreId)->exists()) {
+                $query->whereHas('genres', function ($q) use ($genreId) {
+                    $q->where('genres.id', $genreId);
+                });
+            }
+        }
+
+        // sort
+        $sort = $request->sort ?? 'latest';
+
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+
+            case 'rating':
+                // 評価がない書籍は最後に
+                $query->orderBy('reviews_avg_rating', 'desc')
+                    ->orderBy('created_at', 'desc');
+                break;
+
+            default:
+                // latest
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        // ページネーション（検索条件保持）
+        $books = $query->paginate(10)->appends($request->query());
+
+        $genres = \App\Models\Genre::all();
+
+        return view('books.index', compact('books', 'genres'));
     }
+
 
     public function create()
     {
