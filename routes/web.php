@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
     Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
     Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::get('/books/isbn/{isbn}', [BookController::class, 'searchIsbn'])->name('books.searchIsbn');
 
     /**
      * レビュー
@@ -69,5 +70,19 @@ Route::middleware('auth')->group(function () {
 // 書籍詳細（公開）・・・認証ルートの後
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
+//仮ルート後で直す必要あり
+Route::get('/reports', function () {
+    return 'レポート画面（仮）';
+})->name('reports.index');
+
+Route::get('/reading-plans', function () {
+    return '読書計画一覧（仮）';
+})->name('reading-plans.index');
+
+Route::get('/notifications', function () {
+    return '通知一覧（仮）';
+})->name('notifications.index');
+
+
 // 存在しない URL → 書籍一覧へ
-Route::fallback(fn () => redirect('/books'));
+Route::fallback(fn() => redirect('/books'));
