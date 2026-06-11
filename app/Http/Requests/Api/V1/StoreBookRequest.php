@@ -14,11 +14,10 @@ class StoreBookRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
-            'isbn' => ['required', 'string', 'size:13', 'unique:books,isbn'],
-            'published_date' => ['required', 'date'],
+            'isbn' => ['nullable', 'string', 'size:13', 'unique:books,isbn'],
+            'published_date' => ['nullable', 'date'],
             'description' => ['nullable', 'string', 'max:2000'],
             'image_url' => ['nullable', 'url'],
             'genres' => ['required', 'array'],
@@ -29,7 +28,6 @@ class StoreBookRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'user_id' => 'ユーザーID',
             'title' => 'タイトル',
             'author' => '著者名',
             'isbn' => 'ISBN',
