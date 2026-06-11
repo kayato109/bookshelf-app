@@ -23,12 +23,24 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
-        if ($e instanceof ModelNotFoundException) {
+        // API リクエストかどうか判定
+        $isApi = $request->is('api/*');
+
+        if ($e instanceof ModelNotFoundException && $isApi) {
             return response()->json([
                 'error' => '書籍が見つかりませんでした。',
             ], 404);
         }
 
+        if ($e instanceof \Illuminate\Auth\AuthenticationException && $isApi) {
+            return response()->json(['error' => '認証されていません。'], 401);
+        }
+
+        if ($e instanceof \Illuminate\Auth\Access\AuthorizationException && $isApi) {
+            return response()->json(['error' => 'この操作は許可されていません。'], 403);
+        }
+
         return parent::render($request, $e);
     }
+
 }

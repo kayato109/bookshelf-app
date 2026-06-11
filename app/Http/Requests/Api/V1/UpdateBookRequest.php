@@ -17,16 +17,15 @@ class UpdateBookRequest extends FormRequest
         $bookId = $this->route('book')?->id;
 
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
             'isbn' => [
-                'required',
+                'nullable',
                 'string',
                 'size:13',
                 Rule::unique('books', 'isbn')->ignore($bookId),
             ],
-            'published_date' => ['required', 'date'],
+            'published_date' => ['nullable', 'date'],
             'description' => ['nullable', 'string', 'max:2000'],
             'image_url' => ['nullable', 'url'],
             'genres' => ['required', 'array'],
@@ -37,7 +36,6 @@ class UpdateBookRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'user_id' => 'ユーザーID',
             'title' => 'タイトル',
             'author' => '著者名',
             'isbn' => 'ISBN',
