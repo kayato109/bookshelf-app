@@ -39,7 +39,10 @@ class BookController extends Controller
         }
 
         // sort
-        $sort = $request->sort ?? 'latest';
+        $sort = $request->sort;
+        if ($sort === null || $sort === '') {
+            $sort = 'newest';
+        }
 
         switch ($sort) {
             case 'oldest':
@@ -57,7 +60,7 @@ class BookController extends Controller
                 break;
 
             default:
-                // latest
+                // newest
                 $query->orderBy('created_at', 'desc');
                 break;
         }
