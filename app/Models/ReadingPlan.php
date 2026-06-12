@@ -34,4 +34,9 @@ class ReadingPlan extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

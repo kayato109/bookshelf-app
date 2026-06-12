@@ -21,4 +21,10 @@ class ReadingPlanPolicy
         // completed は編集不可
         return $readingPlan->status !== \App\Enums\ReadingPlanStatus::Completed;
     }
+
+    public function delete(User $user, ReadingPlan $readingPlan): bool
+    {
+        return $readingPlan->user_id === $user->id;
+    }
+
 }
