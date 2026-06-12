@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\ReadingPlan;
 use App\Enums\ReadingPlanStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class ReadingPlanController extends Controller
 {
@@ -55,4 +58,20 @@ class ReadingPlanController extends Controller
         ]);
     }
 
+    public function destroy(ReadingPlan $readingPlan): RedirectResponse
+    {
+        $this->authorize('delete', $readingPlan);
+
+        DB::transaction(function () use ($readingPlan): void {
+            Auth::user()->notifications()
+                ->where('data->plan_id', $readingPlan->id)
+                ->delete();
+
+            $readingPlan->delete();
+        });
+
+        return redirect()
+            ->route('reading-plans.index')
+            ->with('success', '読書計画を削除しました。');
+    }
 }
