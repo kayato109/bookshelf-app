@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Http\Requests\StoreReadingPlanRequest;
 
 class ReadingPlanController extends Controller
 {
@@ -84,5 +85,19 @@ class ReadingPlanController extends Controller
         return view('reading-plans.create', [
             'books' => $books,
         ]);
+    }
+
+    public function store(StoreReadingPlanRequest $request): RedirectResponse
+    {
+        ReadingPlan::create([
+            'user_id' => auth()->id(),
+            'book_id' => $request->book_id,
+            'target_date' => $request->target_date,
+            'status' => ReadingPlanStatus::Pending->value,
+        ]);
+
+        return redirect()
+            ->route('reading-plans.index')
+            ->with('success', '読書計画を登録しました');
     }
 }
