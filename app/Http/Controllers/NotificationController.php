@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class NotificationController extends Controller
