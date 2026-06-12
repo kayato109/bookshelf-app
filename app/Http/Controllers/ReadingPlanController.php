@@ -28,14 +28,14 @@ class ReadingPlanController extends Controller
         return view('reading-plans.index', compact('readingPlans', 'currentStatus'));
     }
 
-    public function complete(ReadingPlan $plan)
+    public function complete(ReadingPlan $readingPlan)
     {
         // 所有者チェック（403）
-        $this->authorize('complete', $plan);
+        $this->authorize('complete', $readingPlan);
 
         // すでに完了済みなら何もしない
-        if ($plan->status !== \App\Enums\ReadingPlanStatus::Completed) {
-            $plan->update([
+        if ($readingPlan->status !== \App\Enums\ReadingPlanStatus::Completed) {
+            $readingPlan->update([
                 'status' => \App\Enums\ReadingPlanStatus::Completed,
                 'completed_at' => now(),
             ]);
@@ -44,6 +44,15 @@ class ReadingPlanController extends Controller
         return redirect()
             ->route('reading-plans.index')
             ->with('success', '読書計画を読了にしました');
+    }
+
+    public function edit(ReadingPlan $readingPlan)
+    {
+        $this->authorize('update', $readingPlan);
+
+        return view('reading-plans.edit', [
+            'readingPlan' => $readingPlan,
+        ]);
     }
 
 }
