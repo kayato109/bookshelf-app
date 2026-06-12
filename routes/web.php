@@ -89,9 +89,8 @@ Route::middleware('auth')->group(function () {
      * 通知機能
      */
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 
-    // 既読化は次 Issue で実装
-    Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });
 
 // 書籍詳細（公開）・・・認証ルートの後
