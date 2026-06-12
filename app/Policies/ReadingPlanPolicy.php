@@ -26,5 +26,4 @@ class ReadingPlanPolicy
     {
         return $readingPlan->user_id === $user->id;
     }
-
 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Http\Requests\StoreReadingPlanRequest;
+use App\Http\Requests\UpdateReadingPlanRequest;
 
 class ReadingPlanController extends Controller
 {
@@ -99,5 +100,25 @@ class ReadingPlanController extends Controller
         return redirect()
             ->route('reading-plans.index')
             ->with('success', '読書計画を登録しました');
+    }
+
+    public function update(UpdateReadingPlanRequest $request, ReadingPlan $readingPlan): RedirectResponse
+    {
+        $this->authorize('update', $readingPlan);
+
+        // overdue → 未来日に変更されたら pending に戻す
+        if (
+            $readingPlan->status === ReadingPlanStatus::Overdue &&
+            $request->target_date >= now()->toDateString()
+        ) {
+            $readingPlan->status = ReadingPlanStatus::Pending;
+        }
+
+        $readingPlan->target_date = $request->target_date;
+        $readingPlan->save();
+
+        return redirect()
+            ->route('reading-plans.index')
+            ->with('success', '読書計画を更新しました');
     }
 }

@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reading-plans/{readingPlan}', [ReadingPlanController::class, 'destroy'])->name('reading-plans.destroy');
     Route::get('/reading-plans/create', [ReadingPlanController::class, 'create'])->name('reading-plans.create');
     Route::post('/reading-plans', [ReadingPlanController::class, 'store'])->name('reading-plans.store');
-
+    Route::put('/reading-plans/{readingPlan}', [ReadingPlanController::class, 'update'])->name('reading-plans.update');
 });
 
 // 書籍詳細（公開）・・・認証ルートの後
@@ -92,10 +92,6 @@ Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show')
 Route::get('/notifications', function () {
     return '通知一覧（仮）';
 })->name('notifications.index');
-
-Route::put('/reading-plans/{readingPlan}', function () {
-    abort(501); // Not Implemented
-})->name('reading-plans.update');
 
 // 存在しない URL → 書籍一覧へ
 Route::fallback(fn() => redirect('/books'));
