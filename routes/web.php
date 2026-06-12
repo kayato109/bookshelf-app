@@ -7,6 +7,7 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReadingPlanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,19 +73,36 @@ Route::middleware('auth')->group(function () {
      */
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
+    /**
+     * 読書計画
+     */
+    Route::get('/reading-plans', [ReadingPlanController::class, 'index'])->name('reading-plans.index');
+
 });
 
 // 書籍詳細（公開）・・・認証ルートの後
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
 
 //仮ルート後で直す必要あり
-Route::get('/reading-plans', function () {
-    return '読書計画一覧（仮）';
-})->name('reading-plans.index');
-
 Route::get('/notifications', function () {
     return '通知一覧（仮）';
 })->name('notifications.index');
+
+Route::get('/reading-plans/create', function () {
+    return 'create page (仮)';
+})->name('reading-plans.create');
+
+Route::get('/reading-plans/{plan}/edit', function () {
+    return 'edit page (仮)';
+})->name('reading-plans.edit');
+
+Route::post('/reading-plans/{plan}/complete', function () {
+    return 'complete (仮)';
+})->name('reading-plans.complete');
+
+Route::delete('/reading-plans/{plan}', function () {
+    return 'destroy (仮)';
+})->name('reading-plans.destroy');
 
 
 // 存在しない URL → 書籍一覧へ
