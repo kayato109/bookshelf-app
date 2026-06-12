@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
      * 読書計画
      */
     Route::get('/reading-plans', [ReadingPlanController::class, 'index'])->name('reading-plans.index');
+    Route::post('/reading-plans/{plan}/complete', [ReadingPlanController::class, 'complete'])->name('reading-plans.complete');
 
 });
 
@@ -95,10 +96,6 @@ Route::get('/reading-plans/create', function () {
 Route::get('/reading-plans/{plan}/edit', function () {
     return 'edit page (仮)';
 })->name('reading-plans.edit');
-
-Route::post('/reading-plans/{plan}/complete', function () {
-    return 'complete (仮)';
-})->name('reading-plans.complete');
 
 Route::delete('/reading-plans/{plan}', function () {
     return 'destroy (仮)';
