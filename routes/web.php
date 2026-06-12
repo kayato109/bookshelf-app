@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reading-plans/{readingPlan}/complete', [ReadingPlanController::class, 'complete'])->name('reading-plans.complete');
     Route::get('/reading-plans/{readingPlan}/edit', [ReadingPlanController::class, 'edit'])->name('reading-plans.edit');
     Route::delete('/reading-plans/{readingPlan}', [ReadingPlanController::class, 'destroy'])->name('reading-plans.destroy');
+    Route::get('/reading-plans/create', [ReadingPlanController::class, 'create'])->name('reading-plans.create');
 
 });
 
@@ -91,9 +92,9 @@ Route::get('/notifications', function () {
     return '通知一覧（仮）';
 })->name('notifications.index');
 
-Route::get('/reading-plans/create', function () {
-    return 'create page (仮)';
-})->name('reading-plans.create');
+Route::post('/reading-plans', function () {
+    abort(501); // Not Implemented
+})->name('reading-plans.store');
 
 Route::put('/reading-plans/{readingPlan}', function () {
     abort(501); // Not Implemented

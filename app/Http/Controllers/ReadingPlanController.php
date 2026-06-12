@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReadingPlan;
+use App\Models\Book;
 use App\Enums\ReadingPlanStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ReadingPlanController extends Controller
 {
@@ -73,5 +75,14 @@ class ReadingPlanController extends Controller
         return redirect()
             ->route('reading-plans.index')
             ->with('success', '読書計画を削除しました。');
+    }
+
+    public function create(): View
+    {
+        $books = Book::orderBy('title')->get();
+
+        return view('reading-plans.create', [
+            'books' => $books,
+        ]);
     }
 }
