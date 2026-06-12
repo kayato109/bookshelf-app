@@ -8,6 +8,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ReviewLikeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReadingPlanController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,15 +84,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/reading-plans/create', [ReadingPlanController::class, 'create'])->name('reading-plans.create');
     Route::post('/reading-plans', [ReadingPlanController::class, 'store'])->name('reading-plans.store');
     Route::put('/reading-plans/{readingPlan}', [ReadingPlanController::class, 'update'])->name('reading-plans.update');
+
+    /**
+     * 通知機能
+     */
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+    // 既読化は次 Issue で実装
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 });
 
 // 書籍詳細（公開）・・・認証ルートの後
 Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
-
-//仮ルート後で直す必要あり
-Route::get('/notifications', function () {
-    return '通知一覧（仮）';
-})->name('notifications.index');
 
 // 存在しない URL → 書籍一覧へ
 Route::fallback(fn() => redirect('/books'));
