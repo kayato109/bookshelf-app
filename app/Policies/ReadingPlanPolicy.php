@@ -7,8 +7,18 @@ use App\Models\User;
 
 class ReadingPlanPolicy
 {
-    public function complete(User $user, ReadingPlan $plan): bool
+    public function complete(User $user, ReadingPlan $readingPlan): bool
     {
-        return $plan->user_id === $user->id;
+        return $readingPlan->user_id === $user->id;
+    }
+
+    public function update(User $user, ReadingPlan $readingPlan): bool
+    {
+        if ($readingPlan->user_id !== $user->id) {
+            return false;
+        }
+
+        // completed は編集不可
+        return $readingPlan->status !== \App\Enums\ReadingPlanStatus::Completed;
     }
 }

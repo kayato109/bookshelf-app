@@ -77,7 +77,8 @@ Route::middleware('auth')->group(function () {
      * 読書計画
      */
     Route::get('/reading-plans', [ReadingPlanController::class, 'index'])->name('reading-plans.index');
-    Route::post('/reading-plans/{plan}/complete', [ReadingPlanController::class, 'complete'])->name('reading-plans.complete');
+    Route::post('/reading-plans/{readingPlan}/complete', [ReadingPlanController::class, 'complete'])->name('reading-plans.complete');
+    Route::get('/reading-plans/{readingPlan}/edit', [ReadingPlanController::class, 'edit'])->name('reading-plans.edit');
 
 });
 
@@ -93,14 +94,13 @@ Route::get('/reading-plans/create', function () {
     return 'create page (仮)';
 })->name('reading-plans.create');
 
-Route::get('/reading-plans/{plan}/edit', function () {
-    return 'edit page (仮)';
-})->name('reading-plans.edit');
-
 Route::delete('/reading-plans/{plan}', function () {
     return 'destroy (仮)';
 })->name('reading-plans.destroy');
 
+Route::put('/reading-plans/{readingPlan}', function () {
+    abort(501); // Not Implemented
+})->name('reading-plans.update');
 
 // 存在しない URL → 書籍一覧へ
 Route::fallback(fn() => redirect('/books'));
