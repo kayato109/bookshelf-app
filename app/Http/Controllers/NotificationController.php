@@ -19,4 +19,24 @@ class NotificationController extends Controller
             'notifications' => $notifications,
         ]);
     }
+
+    public function markAsRead(Request $request, string $id): RedirectResponse
+    {
+        // 存在しない場合は 404
+        $notification = DatabaseNotification::findOrFail($id);
+
+        // 認可（所有者チェック）
+        $this->authorize('update', $notification);
+
+        // 未読なら read_at を更新
+        if ($notification->read_at === null) {
+            $notification->update([
+                'read_at' => now(),
+            ]);
+        }
+
+        return redirect()
+            ->route('notifications.index')
+            ->with('success', '通知を既読にしました');
+    }
 }
