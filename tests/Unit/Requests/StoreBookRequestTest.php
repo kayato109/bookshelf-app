@@ -26,8 +26,8 @@ class StoreBookRequestTest extends TestCase
         $this->assertTrue($validator->fails());
         $this->assertArrayHasKey('title', $validator->errors()->messages());
         $this->assertArrayHasKey('author', $validator->errors()->messages());
-        $this->assertArrayHasKey('isbn', $validator->errors()->messages());
-        $this->assertArrayHasKey('published_date', $validator->errors()->messages());
+        // $this->assertArrayHasKey('isbn', $validator->errors()->messages()); // 応用要件で nullable
+        // $this->assertArrayHasKey('published_date', $validator->errors()->messages()); // 応用要件で nullable
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 

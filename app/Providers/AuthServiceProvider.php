@@ -3,7 +3,13 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Models\Book;
+use App\Models\ReadingPlan;
+use App\Policies\BookPolicy;
+use App\Policies\NotificationPolicy;
+use App\Policies\ReadingPlanPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Notifications\DatabaseNotification;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,9 +19,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        \App\Models\Book::class => \App\Policies\BookPolicy::class,
-        \App\Models\ReadingPlan::class => \App\Policies\ReadingPlanPolicy::class,
-        \Illuminate\Notifications\DatabaseNotification::class => \App\Policies\NotificationPolicy::class,
+        Book::class => BookPolicy::class,
+        ReadingPlan::class => ReadingPlanPolicy::class,
+        DatabaseNotification::class => NotificationPolicy::class,
     ];
 
     /**

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Collection;
-use App\Models\Book;
 use App\Models\Genre;
 use App\Models\Review;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
@@ -59,7 +57,7 @@ class ReportController extends Controller
         $genreRatings = Genre::with([
             'books.reviews' => function ($q) use ($user) {
                 $q->where('user_id', $user->id);
-            }
+            },
         ])
             ->get()
             ->map(function ($genre) {
@@ -74,7 +72,7 @@ class ReportController extends Controller
                         : 0,
                 ];
             })
-            ->filter(fn($g) => $g['count'] > 0)
+            ->filter(fn ($g) => $g['count'] > 0)
             ->sortByDesc('average_rating')
             ->take(5)
             ->values()
