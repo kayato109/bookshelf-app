@@ -27,7 +27,7 @@ class BookController extends Controller
                 });
             })
             ->when($validated['genre_id'] ?? null, function ($query, $genreId) {
-                $query->whereHas('genres', fn($q) => $q->where('genres.id', $genreId));
+                $query->whereHas('genres', fn ($q) => $q->where('genres.id', $genreId));
             })
             ->latest()
             ->paginate($perPage);

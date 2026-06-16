@@ -2,15 +2,16 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\ReadingPlan;
-use Illuminate\Support\Facades\Notification;
 use App\Notifications\ReadingPlanReminderNotification;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Notification;
 
 class DailyReadingPlanBatch extends Command
 {
     protected $signature = 'batch:daily-reading-plan';
+
     protected $description = 'Daily batch: update statuses and send reminder notifications';
 
     public function handle(): int
@@ -89,7 +90,6 @@ class DailyReadingPlanBatch extends Command
             'timing' => $timing,
         ]));
 
-
     }
 
     private function buildBody(ReadingPlan $plan, string $timing): string
@@ -103,5 +103,4 @@ class DailyReadingPlanBatch extends Command
             default => "『{$title}』の読書計画に関する通知です。",
         };
     }
-
 }

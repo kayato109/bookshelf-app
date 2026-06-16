@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ReadingPlan;
-use App\Models\Book;
 use App\Enums\ReadingPlanStatus;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 use App\Http\Requests\StoreReadingPlanRequest;
 use App\Http\Requests\UpdateReadingPlanRequest;
+use App\Models\Book;
+use App\Models\ReadingPlan;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class ReadingPlanController extends Controller
 {
@@ -22,7 +22,7 @@ class ReadingPlanController extends Controller
         $currentStatus = $request->status;
 
         // Enum の value 一覧
-        $validStatuses = array_map(fn($s) => $s->value, ReadingPlanStatus::cases());
+        $validStatuses = array_map(fn ($s) => $s->value, ReadingPlanStatus::cases());
 
         $readingPlans = ReadingPlan::with('book')
             ->where('user_id', $user->id)
@@ -41,9 +41,9 @@ class ReadingPlanController extends Controller
         $this->authorize('complete', $readingPlan);
 
         // すでに完了済みなら何もしない
-        if ($readingPlan->status !== \App\Enums\ReadingPlanStatus::Completed) {
+        if ($readingPlan->status !== ReadingPlanStatus::Completed) {
             $readingPlan->update([
-                'status' => \App\Enums\ReadingPlanStatus::Completed,
+                'status' => ReadingPlanStatus::Completed,
                 'completed_at' => now(),
             ]);
         }
@@ -106,15 +106,18 @@ class ReadingPlanController extends Controller
     {
         $this->authorize('update', $readingPlan);
 
+        $validated = $request->validated();
+
         // overdue → 未来日に変更されたら pending に戻す
         if (
             $readingPlan->status === ReadingPlanStatus::Overdue &&
-            $request->target_date >= now()->toDateString()
+            $validated['target_date'] >= now()->toDateString()
         ) {
             $readingPlan->status = ReadingPlanStatus::Pending;
+            $readingPlan->completed_at = null;
         }
 
-        $readingPlan->target_date = $request->target_date;
+        $readingPlan->target_date = $validated['target_date'];
         $readingPlan->save();
 
         return redirect()

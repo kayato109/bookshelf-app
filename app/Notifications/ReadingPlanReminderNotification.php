@@ -9,9 +9,7 @@ class ReadingPlanReminderNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(private array $data)
-    {
-    }
+    public function __construct(private array $data) {}
 
     public function via($notifiable): array
     {
@@ -19,6 +17,11 @@ class ReadingPlanReminderNotification extends Notification
     }
 
     public function toDatabase($notifiable): array
+    {
+        return $this->data;
+    }
+
+    public function getData(): array
     {
         return $this->data;
     }

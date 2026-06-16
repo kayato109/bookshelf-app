@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\ReadingPlanStatus;
 use App\Models\ReadingPlan;
 use App\Models\User;
 
@@ -19,7 +20,7 @@ class ReadingPlanPolicy
         }
 
         // completed は編集不可
-        return $readingPlan->status !== \App\Enums\ReadingPlanStatus::Completed;
+        return $readingPlan->status !== ReadingPlanStatus::Completed;
     }
 
     public function delete(User $user, ReadingPlan $readingPlan): bool

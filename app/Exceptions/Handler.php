@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -32,15 +34,14 @@ class Handler extends ExceptionHandler
             ], 404);
         }
 
-        if ($e instanceof \Illuminate\Auth\AuthenticationException && $isApi) {
+        if ($e instanceof AuthenticationException && $isApi) {
             return response()->json(['error' => '認証されていません。'], 401);
         }
 
-        if ($e instanceof \Illuminate\Auth\Access\AuthorizationException && $isApi) {
+        if ($e instanceof AuthorizationException && $isApi) {
             return response()->json(['error' => 'この操作は許可されていません。'], 403);
         }
 
         return parent::render($request, $e);
     }
-
 }
