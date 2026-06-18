@@ -20,10 +20,10 @@ class BookIndexTest extends TestCase
             'author' => 'テスト著者',
         ]);
 
-        $book->genres()->attach($genre->id);
+        $book->genres()->sync([$genre->id]);
 
         // Act
-        $response = $this->get('/books');
+        $response = $this->get(route('books.index'));
 
         // Assert
         $response->assertStatus(200);

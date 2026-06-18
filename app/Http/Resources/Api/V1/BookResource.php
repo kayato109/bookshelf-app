@@ -4,8 +4,14 @@ namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * 書籍情報を API レスポンス形式に変換するリソース.
+ */
 class BookResource extends JsonResource
 {
+    /**
+     * 配列形式に変換
+     */
     public function toArray($request): array
     {
         return [

@@ -7,18 +7,29 @@ use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
+/**
+ * 書籍レビューの初期データを生成するシーダー.
+ *
+ * 各書籍に対して 2〜4 件のレビューを作成し、
+ * 評価（1〜5）に応じたテンプレートコメントを自動生成する。
+ */
 class ReviewSeeder extends Seeder
 {
+    /**
+     * シーディングの実行.
+     */
     public function run(): void
     {
-        $users = User::pluck('name', 'id');
+        // ['id' => 'name'] の形で取得
+        $userNames = User::pluck('name', 'id');
         $books = Book::all();
 
-        if ($users->isEmpty() || $books->isEmpty()) {
+        // ユーザーまたは書籍が存在しない場合は処理を中断
+        if ($userNames->isEmpty() || $books->isEmpty()) {
             return;
         }
 
-        // ★応用要件：評価別テンプレート（1〜5）
+        // 評価ごとのコメントテンプレート
         $ratingTemplates = [
             1 => '「:title」はあまり好みではありませんでした。（by :user）',
             2 => '「:title」はやや物足りない内容でした。（by :user）',
@@ -28,18 +39,18 @@ class ReviewSeeder extends Seeder
         ];
 
         foreach ($books as $book) {
-            // ★応用要件：2〜4件のレビュー
+            // 各書籍に 2〜4 件のレビューを作成
             $reviewCount = rand(2, 4);
 
             for ($i = 0; $i < $reviewCount; $i++) {
                 // ランダムユーザー
-                $userId = $users->keys()->random();
-                $userName = $users[$userId];
+                $userId = $userNames->keys()->random();
+                $userName = $userNames[$userId];
 
-                // ★応用要件：rating を 1〜5 に拡大
+                // 評価（1〜5）
                 $rating = rand(1, 5);
 
-                // ★応用要件：評価別テンプレートを使用
+                // 評価に応じたテンプレートを取得
                 $template = $ratingTemplates[$rating];
 
                 // テンプレート置換

@@ -14,7 +14,7 @@ class BookCreateTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/books/create');
+        $response = $this->actingAs($user)->get(route('books.create'));
 
         $response->assertStatus(200)
             ->assertSeeText('書籍登録');
@@ -22,7 +22,7 @@ class BookCreateTest extends TestCase
 
     public function test_未認証ユーザーはログインへリダイレクトされる()
     {
-        $response = $this->get('/books/create');
+        $response = $this->get(route('books.create'));
 
         $response->assertRedirect(route('login'));
     }

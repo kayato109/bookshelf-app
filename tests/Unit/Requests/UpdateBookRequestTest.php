@@ -13,13 +13,14 @@ class UpdateBookRequestTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_isb_nのuniqueが自身を除外して動作する()
+    public function test_isbnのuniqueが自身を除外して動作する()
     {
         $genre = Genre::factory()->create();
         $book = Book::factory()->create(['isbn' => '1234567890123']);
 
         $request = new UpdateBookRequest;
 
+        // ルートパラメータに $book を返すダミー resolver
         $request->setRouteResolver(function () use ($book) {
             return new class($book)
             {
@@ -35,14 +36,19 @@ class UpdateBookRequestTest extends TestCase
         $data = [
             'title' => 'test title',
             'author' => 'test author',
-            'isbn' => '1234567890123',
+            'isbn' => '1234567890123', // ← 自身と同じ ISBN
             'published_date' => '2024-01-01',
             'description' => 'test',
             'image_url' => 'https://example.com',
             'genres' => [$genre->id],
         ];
 
-        $validator = Validator::make($data, $request->rules(), $request->messages());
+        $validator = Validator::make(
+            $data,
+            $request->rules(),
+            $request->messages(),
+            [] // 属性名置き換え（今回は空でOK）
+        );
 
         $this->assertFalse($validator->fails());
     }

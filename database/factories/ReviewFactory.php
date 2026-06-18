@@ -8,12 +8,16 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
+ * Review モデルのファクトリ.
+ *
+ * 書籍レビューのダミーデータを生成する。
+ *
  * @extends Factory<Review>
  */
 class ReviewFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * モデルのデフォルト状態を定義.
      *
      * @return array<string, mixed>
      */
@@ -22,8 +26,8 @@ class ReviewFactory extends Factory
         return [
             'book_id' => Book::factory(),
             'user_id' => User::factory(),
-            'rating' => fake()->numberBetween(1, 5),
-            'comment' => fake()->text(100),
+            'rating' => $this->faker->numberBetween(1, 5),
+            'comment' => $this->faker->text(100),
         ];
     }
 }

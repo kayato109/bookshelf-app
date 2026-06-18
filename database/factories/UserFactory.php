@@ -8,25 +8,29 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * User モデルのファクトリ.
+ *
+ * テストやシーディングで使用するユーザーデータを生成する。
+ *
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
+     * ファクトリで使用される現在のパスワード.
      */
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
+     * モデルのデフォルト状態を定義.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -34,7 +38,7 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * メールアドレスが未認証の状態を指定.
      */
     public function unverified(): static
     {

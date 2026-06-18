@@ -13,9 +13,6 @@ class ApiBookUpdateTest extends TestCase
 {
     use RefreshDatabase;
 
-    /* ---------------------------------------------------------
-        未認証 → 401
-    --------------------------------------------------------- */
     public function test_未認証ユーザーは書籍更新できず401が返る()
     {
         $book = Book::factory()->create();
@@ -25,22 +22,17 @@ class ApiBookUpdateTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /* ---------------------------------------------------------
-        認証済み所有者 → 200
-    --------------------------------------------------------- */
     public function test_書籍更新_apiで更新され200が返る()
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        // 所有者の本
         $book = Book::factory()->create(['user_id' => $user->id]);
 
         $genre1 = Genre::factory()->create();
         $genre2 = Genre::factory()->create();
 
         $payload = [
-            // user_id は送らない（API 側で無視される）
             'title' => '更新後のタイトル',
             'author' => '更新後の著者',
             'isbn' => '9781234567891',
@@ -52,7 +44,7 @@ class ApiBookUpdateTest extends TestCase
 
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonPath('data.title', '更新後のタイトル');
 
         $this->assertDatabaseHas('books', [
@@ -71,9 +63,6 @@ class ApiBookUpdateTest extends TestCase
         ]);
     }
 
-    /* ---------------------------------------------------------
-        認証済みでも所有者以外 → 403
-    --------------------------------------------------------- */
     public function test_認証済みでも所有者以外は書籍更新できず403が返る()
     {
         $owner = User::factory()->create();
@@ -83,7 +72,7 @@ class ApiBookUpdateTest extends TestCase
 
         Sanctum::actingAs($other);
 
-        $genre = Genre::factory()->create(); // ← 追加
+        $genre = Genre::factory()->create();
 
         $payload = [
             'title' => '更新後のタイトル',
@@ -100,9 +89,6 @@ class ApiBookUpdateTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /* ---------------------------------------------------------
-        バリデーションエラー → 422
-    --------------------------------------------------------- */
     public function test_書籍更新_api_バリデーションエラーで422が返る()
     {
         $user = User::factory()->create();
@@ -117,9 +103,6 @@ class ApiBookUpdateTest extends TestCase
         $response = $this->putJson("/api/v1/books/{$book->id}", $payload);
 
         $response->assertStatus(422)
-            ->assertJsonStructure([
-                'message',
-                'errors' => ['title'],
-            ]);
+            ->assertJsonValidationErrors(['title']);
     }
 }

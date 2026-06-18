@@ -14,15 +14,23 @@ class BookShowTest extends TestCase
     public function test_書籍詳細が表示されレビューと平均評価が見える()
     {
         $book = Book::factory()->create(['title' => '詳細テスト本']);
-        Review::factory()->create(['book_id' => $book->id, 'rating' => 5, 'comment' => '最良']);
-        Review::factory()->create(['book_id' => $book->id, 'rating' => 3, 'comment' => '普通']);
 
-        $response = $this->get("/books/{$book->id}");
+        Review::factory()->for($book)->create([
+            'rating' => 5,
+            'comment' => '最良',
+        ]);
+
+        Review::factory()->for($book)->create([
+            'rating' => 3,
+            'comment' => '普通',
+        ]);
+
+        $response = $this->get(route('books.show', $book));
 
         $response->assertStatus(200);
         $response->assertSeeText('詳細テスト本');
         $response->assertSeeText('最良');
         $response->assertSeeText('普通');
-        $response->assertSee('4');
+        $response->assertSee('4'); // 平均評価 (5 + 3) / 2
     }
 }

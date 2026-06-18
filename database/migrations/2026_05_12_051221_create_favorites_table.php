@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * favorites テーブルを作成するマイグレーション.
+     *
+     * ユーザーがお気に入り登録した書籍との関係を管理する。
      */
     public function up(): void
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('book_id')
@@ -29,7 +31,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the favorites table.
      */
     public function down(): void
     {

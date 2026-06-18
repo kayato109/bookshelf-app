@@ -8,12 +8,16 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
+ * ReviewLike モデルのファクトリ.
+ *
+ * ユーザーがレビューに「いいね」したデータを生成する。
+ *
  * @extends Factory<ReviewLike>
  */
 class ReviewLikeFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * モデルのデフォルト状態を定義.
      *
      * @return array<string, mixed>
      */

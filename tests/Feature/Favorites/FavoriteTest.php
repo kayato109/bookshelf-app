@@ -12,20 +12,14 @@ class FavoriteTest extends TestCase
 {
     use RefreshDatabase;
 
-    /* ---------------------------------------------------------
-        お気に入り一覧（GET /favorites）
-    --------------------------------------------------------- */
     public function test_認証ユーザーはお気に入り一覧を表示できる()
     {
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        Favorite::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-        ]);
+        Favorite::factory()->for($user)->for($book)->create();
 
-        $response = $this->actingAs($user)->get('/favorites');
+        $response = $this->actingAs($user)->get(route('favorites.index'));
 
         $response->assertStatus(200)
             ->assertSeeText($book->title);
@@ -33,14 +27,11 @@ class FavoriteTest extends TestCase
 
     public function test_未認証ユーザーはお気に入り一覧にアクセスできずログインへリダイレクト()
     {
-        $response = $this->get('/favorites');
+        $response = $this->get(route('favorites.index'));
 
         $response->assertRedirect(route('login'));
     }
 
-    /* ---------------------------------------------------------
-        お気に入りトグル（POST /books/{book}/favorites）
-    --------------------------------------------------------- */
     public function test_認証ユーザーはお気に入りをトグルできる()
     {
         $user = User::factory()->create();
@@ -49,10 +40,10 @@ class FavoriteTest extends TestCase
         // 1回目 → 追加
         $response = $this
             ->actingAs($user)
-            ->from("/books/{$book->id}")
-            ->post("/books/{$book->id}/favorites");
+            ->from(route('books.show', $book))
+            ->post(route('favorites.toggle', $book));
 
-        $response->assertRedirect("/books/{$book->id}");
+        $response->assertRedirect(route('books.show', $book));
 
         $this->assertDatabaseHas('favorites', [
             'user_id' => $user->id,
@@ -62,10 +53,10 @@ class FavoriteTest extends TestCase
         // 2回目 → 解除
         $response = $this
             ->actingAs($user)
-            ->from("/books/{$book->id}")
-            ->post("/books/{$book->id}/favorites");
+            ->from(route('books.show', $book))
+            ->post(route('favorites.toggle', $book));
 
-        $response->assertRedirect("/books/{$book->id}");
+        $response->assertRedirect(route('books.show', $book));
 
         $this->assertDatabaseMissing('favorites', [
             'user_id' => $user->id,
@@ -78,13 +69,10 @@ class FavoriteTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        Favorite::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-        ]);
+        Favorite::factory()->for($user)->for($book)->create();
 
         // 2回目 → トグルなので解除される
-        $this->actingAs($user)->post("/books/{$book->id}/favorites");
+        $this->actingAs($user)->post(route('favorites.toggle', $book));
 
         $this->assertDatabaseMissing('favorites', [
             'user_id' => $user->id,
@@ -96,7 +84,7 @@ class FavoriteTest extends TestCase
     {
         $book = Book::factory()->create();
 
-        $response = $this->post("/books/{$book->id}/favorites");
+        $response = $this->post(route('favorites.toggle', $book));
 
         $response->assertRedirect(route('login'));
     }

@@ -20,14 +20,13 @@ class BookSortTest extends TestCase
         $old = Book::factory()->create(['created_at' => now()->subDays(5)]);
         $new = Book::factory()->create(['created_at' => now()->subDays(1)]);
 
-        $response = $this->get('/books?sort=newest');
+        $response = $this->get(route('books.index', ['sort' => 'newest']));
 
-        $response->assertStatus(200);
-
-        $response->assertSeeInOrder([
-            $new->title,
-            $old->title,
-        ]);
+        $response->assertStatus(200)
+            ->assertSeeInOrder([
+                $new->title,
+                $old->title,
+            ]);
     }
 
     public function test_oldestで古い順になる()
@@ -38,14 +37,13 @@ class BookSortTest extends TestCase
         $old = Book::factory()->create(['created_at' => now()->subDays(10)]);
         $new = Book::factory()->create(['created_at' => now()->subDays(1)]);
 
-        $response = $this->get('/books?sort=oldest');
+        $response = $this->get(route('books.index', ['sort' => 'oldest']));
 
-        $response->assertStatus(200);
-
-        $response->assertSeeInOrder([
-            $old->title,
-            $new->title,
-        ]);
+        $response->assertStatus(200)
+            ->assertSeeInOrder([
+                $old->title,
+                $new->title,
+            ]);
     }
 
     public function test_titleでタイトル昇順になる()
@@ -57,15 +55,14 @@ class BookSortTest extends TestCase
         $b2 = Book::factory()->create(['title' => 'Laravel']);
         $b3 = Book::factory()->create(['title' => 'Zebra']);
 
-        $response = $this->get('/books?sort=title');
+        $response = $this->get(route('books.index', ['sort' => 'title']));
 
-        $response->assertStatus(200);
-
-        $response->assertSeeInOrder([
-            'Apple',
-            'Laravel',
-            'Zebra',
-        ]);
+        $response->assertStatus(200)
+            ->assertSeeInOrder([
+                'Apple',
+                'Laravel',
+                'Zebra',
+            ]);
     }
 
     public function test_ratingで平均評価の高い順になりレビューなしは最後()
@@ -73,33 +70,22 @@ class BookSortTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // ★ 評価 5
         $high = Book::factory()->create();
-        Review::factory()->create([
-            'book_id' => $high->id,
-            'rating' => 5,
-        ]);
+        Review::factory()->for($high)->create(['rating' => 5]);
 
-        // ★ 評価 3
         $mid = Book::factory()->create();
-        Review::factory()->create([
-            'book_id' => $mid->id,
-            'rating' => 3,
-        ]);
+        Review::factory()->for($mid)->create(['rating' => 3]);
 
-        // ★ 評価なし
         $none = Book::factory()->create();
 
-        $response = $this->get('/books?sort=rating');
+        $response = $this->get(route('books.index', ['sort' => 'rating']));
 
-        $response->assertStatus(200);
-
-        // 高い順 → 5 → 3 → 評価なし
-        $response->assertSeeInOrder([
-            $high->title,
-            $mid->title,
-            $none->title,
-        ]);
+        $response->assertStatus(200)
+            ->assertSeeInOrder([
+                $high->title,
+                $mid->title,
+                $none->title,
+            ]);
     }
 
     public function test_sort不正値はlatestにフォールバックする()
@@ -110,14 +96,12 @@ class BookSortTest extends TestCase
         $old = Book::factory()->create(['created_at' => now()->subDays(10)]);
         $new = Book::factory()->create(['created_at' => now()->subDays(1)]);
 
-        // sort=unknown → newest（created_at desc）
-        $response = $this->get('/books?sort=newest');
+        $response = $this->get(route('books.index', ['sort' => 'unknown']));
 
-        $response->assertStatus(200);
-
-        $response->assertSeeInOrder([
-            $new->title,
-            $old->title,
-        ]);
+        $response->assertStatus(200)
+            ->assertSeeInOrder([
+                $new->title,
+                $old->title,
+            ]);
     }
 }

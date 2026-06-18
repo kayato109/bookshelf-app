@@ -5,10 +5,15 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 読書計画の更新用リクエスト.
+ *
+ * - target_date: 必須・今日以降
+ */
 class UpdateReadingPlanRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * 認可（ログイン済みユーザーのみ）
      */
     public function authorize(): bool
     {
@@ -16,7 +21,7 @@ class UpdateReadingPlanRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * バリデーションルール
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -31,6 +36,11 @@ class UpdateReadingPlanRequest extends FormRequest
         ];
     }
 
+    /**
+     * カスタムエラーメッセージ
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

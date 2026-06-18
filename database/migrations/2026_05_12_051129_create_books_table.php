@@ -7,12 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * books テーブルを作成するマイグレーション.
+     *
+     * 書籍情報（タイトル・著者・ISBN・出版日など）を管理する。
+     * user_id は書籍の登録者を示す。
      */
     public function up(): void
     {
-        Schema::create('books', function (Blueprint $table) {
+        Schema::create('books', function (Blueprint $table): void {
             $table->id();
+
             $table->foreignId('user_id')
                 ->constrained()
                 ->onDelete('cascade');
@@ -29,7 +33,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the books table.
      */
     public function down(): void
     {

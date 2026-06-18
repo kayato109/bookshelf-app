@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
+/**
+ * 読書計画の CRUD + 完了処理を行うコントローラ.
+ */
 class ReadingPlanController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * 読書計画一覧
+     */
+    public function index(Request $request): View
     {
         $user = auth()->user();
 
@@ -26,21 +32,23 @@ class ReadingPlanController extends Controller
 
         $readingPlans = ReadingPlan::with('book')
             ->where('user_id', $user->id)
-            ->when(in_array($currentStatus, $validStatuses, true), function ($query) use ($currentStatus) {
-                $query->where('status', $currentStatus);
-            })
+            ->when(
+                in_array($currentStatus, $validStatuses, true),
+                fn ($query) => $query->where('status', $currentStatus)
+            )
             ->orderBy('target_date')
             ->get();
 
         return view('reading-plans.index', compact('readingPlans', 'currentStatus'));
     }
 
-    public function complete(ReadingPlan $readingPlan)
+    /**
+     * 読書計画を完了にする
+     */
+    public function complete(ReadingPlan $readingPlan): RedirectResponse
     {
-        // 所有者チェック（403）
         $this->authorize('complete', $readingPlan);
 
-        // すでに完了済みなら何もしない
         if ($readingPlan->status !== ReadingPlanStatus::Completed) {
             $readingPlan->update([
                 'status' => ReadingPlanStatus::Completed,
@@ -53,7 +61,10 @@ class ReadingPlanController extends Controller
             ->with('success', '読書計画を読了にしました');
     }
 
-    public function edit(ReadingPlan $readingPlan)
+    /**
+     * 読書計画編集画面
+     */
+    public function edit(ReadingPlan $readingPlan): View
     {
         $this->authorize('update', $readingPlan);
 
@@ -62,6 +73,9 @@ class ReadingPlanController extends Controller
         ]);
     }
 
+    /**
+     * 読書計画削除
+     */
     public function destroy(ReadingPlan $readingPlan): RedirectResponse
     {
         $this->authorize('delete', $readingPlan);
@@ -79,6 +93,9 @@ class ReadingPlanController extends Controller
             ->with('success', '読書計画を削除しました。');
     }
 
+    /**
+     * 読書計画作成画面
+     */
     public function create(): View
     {
         $books = Book::orderBy('title')->get();
@@ -88,6 +105,9 @@ class ReadingPlanController extends Controller
         ]);
     }
 
+    /**
+     * 読書計画登録
+     */
     public function store(StoreReadingPlanRequest $request): RedirectResponse
     {
         ReadingPlan::create([
@@ -102,6 +122,9 @@ class ReadingPlanController extends Controller
             ->with('success', '読書計画を登録しました');
     }
 
+    /**
+     * 読書計画更新
+     */
     public function update(UpdateReadingPlanRequest $request, ReadingPlan $readingPlan): RedirectResponse
     {
         $this->authorize('update', $readingPlan);

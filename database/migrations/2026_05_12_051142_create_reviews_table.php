@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * reviews テーブルを作成するマイグレーション.
+     *
+     * 書籍に対するユーザーのレビュー（評価・コメント）を管理する。
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('book_id')
@@ -30,7 +32,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the reviews table.
      */
     public function down(): void
     {
