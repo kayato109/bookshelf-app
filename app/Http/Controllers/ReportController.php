@@ -5,34 +5,52 @@ namespace App\Http\Controllers;
 use App\Models\Genre;
 use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
+/**
+ * 読書レポート（統計情報）を表示するコントローラ.
+ *
+ * - 基本サマリー（総レビュー数・読了冊数・平均評価）
+ * - 評価分布（1〜5）
+ * - 高評価書籍TOP5
+ * - ジャンル別評価傾向TOP5
+ */
 class ReportController extends Controller
 {
-    public function index()
+    /**
+     * 読書レポート画面
+     */
+    public function index(): View
     {
         $user = Auth::user();
 
-        // 1. 基本サマリー
+        /**
+         * 1. 基本サマリー
+         */
         $totalReviews = Review::where('user_id', $user->id)->count();
 
         $booksRead = Review::where('user_id', $user->id)
             ->distinct('book_id')
             ->count('book_id');
 
-        $averageRating = Review::where('user_id', $user->id)
-            ->avg('rating');
+        $averageRating = Review::where('user_id', $user->id)->avg('rating');
         $averageRating = $averageRating ? round($averageRating, 1) : 0;
 
-        // 2. 評価分布（1〜5）
+        /**
+         * 2. 評価分布（1〜5）
+         */
         $ratingDistribution = collect();
         for ($i = 1; $i <= 5; $i++) {
             $count = Review::where('user_id', $user->id)
                 ->where('rating', $i)
                 ->count();
+
             $ratingDistribution->push($count);
         }
 
-        // 3. 高評価書籍TOP5（4星以上）
+        /**
+         * 3. 高評価書籍TOP5（4星以上）
+         */
         $topRatedBooks = Review::with('book')
             ->where('user_id', $user->id)
             ->groupBy('book_id')
@@ -53,7 +71,9 @@ class ReportController extends Controller
             ->values()
             ->all();
 
-        // 4. ジャンル別評価傾向TOP5
+        /**
+         * 4. ジャンル別評価傾向TOP5
+         */
         $genreRatings = Genre::with([
             'books.reviews' => function ($q) use ($user) {
                 $q->where('user_id', $user->id);
@@ -78,6 +98,9 @@ class ReportController extends Controller
             ->values()
             ->all();
 
+        /**
+         * Blade に渡す統計データ
+         */
         $stats = [
             'summary' => [
                 'total_reviews' => $totalReviews,

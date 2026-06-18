@@ -21,7 +21,7 @@ class BookSearchFilterTest extends TestCase
         Book::factory()->create(['title' => 'PHPの教科書', 'author' => '佐藤花子']);
         Book::factory()->create(['title' => 'JavaScript完全ガイド', 'author' => 'Laravel太郎']);
 
-        $response = $this->get('/books?keyword=Laravel');
+        $response = $this->get(route('books.index', ['keyword' => 'Laravel']));
 
         $response->assertStatus(200);
         $response->assertSee('Laravel入門');          // title 部分一致
@@ -29,7 +29,7 @@ class BookSearchFilterTest extends TestCase
         $response->assertDontSee('PHPの教科書');
     }
 
-    public function test_genreフィルタで該当ジャンルのみ表示される_存在しない_i_dは無視される()
+    public function test_genreフィルタで該当ジャンルのみ表示される_存在しない_idは無視される()
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -38,25 +38,25 @@ class BookSearchFilterTest extends TestCase
         $genreB = Genre::factory()->create();
 
         $bookA = Book::factory()->create();
-        $bookA->genres()->attach($genreA);
+        $bookA->genres()->sync([$genreA->id]);
 
         $bookB = Book::factory()->create();
-        $bookB->genres()->attach($genreB);
+        $bookB->genres()->sync([$genreB->id]);
 
         // genre=A → A のみ
-        $response = $this->get("/books?genre={$genreA->id}");
+        $response = $this->get(route('books.index', ['genre' => $genreA->id]));
         $response->assertStatus(200);
         $response->assertSee($bookA->title);
         $response->assertDontSee($bookB->title);
 
         // genre=999999 → 存在しない → 全件表示
-        $response = $this->get('/books?genre=999999');
+        $response = $this->get(route('books.index', ['genre' => 999999]));
         $response->assertStatus(200);
         $response->assertSee($bookA->title);
         $response->assertSee($bookB->title);
     }
 
-    public function test_keywordとgenre併用で_an_d条件になる()
+    public function test_keywordとgenre併用で_and条件になる()
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -64,15 +64,18 @@ class BookSearchFilterTest extends TestCase
         $genre = Genre::factory()->create();
 
         $match = Book::factory()->create(['title' => 'Laravel入門']);
-        $match->genres()->attach($genre);
+        $match->genres()->sync([$genre->id]);
 
         $noGenre = Book::factory()->create(['title' => 'Laravel実践']);
-        $noGenre->genres()->attach(Genre::factory()->create());
+        $noGenre->genres()->sync([Genre::factory()->create()->id]);
 
         $noKeyword = Book::factory()->create(['title' => 'PHP入門']);
-        $noKeyword->genres()->attach($genre);
+        $noKeyword->genres()->sync([$genre->id]);
 
-        $response = $this->get("/books?keyword=Laravel&genre={$genre->id}");
+        $response = $this->get(route('books.index', [
+            'keyword' => 'Laravel',
+            'genre' => $genre->id,
+        ]));
 
         $response->assertStatus(200);
         $response->assertSee($match->title);
@@ -87,7 +90,12 @@ class BookSearchFilterTest extends TestCase
 
         Book::factory()->count(20)->create(['title' => 'Laravel本']);
 
-        $response = $this->get('/books?keyword=Laravel&genre=1&sort=title&page=2');
+        $response = $this->get(route('books.index', [
+            'keyword' => 'Laravel',
+            'genre' => 1,
+            'sort' => 'title',
+            'page' => 2,
+        ]));
 
         $response->assertStatus(200);
 

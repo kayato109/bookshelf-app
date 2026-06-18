@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * book_genre テーブルを作成するマイグレーション.
+     *
+     * 書籍とジャンルの多対多リレーションを管理する中間テーブル。
      */
     public function up(): void
     {
-        Schema::create('book_genre', function (Blueprint $table) {
+        Schema::create('book_genre', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('book_id')
@@ -29,7 +31,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the pivot table for books and genres.
      */
     public function down(): void
     {

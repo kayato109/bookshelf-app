@@ -13,16 +13,14 @@ class ReadingPlanEditTest extends TestCase
 
     public function test_所有者は編集画面を表示できる()
     {
-        $this->withoutExceptionHandling();
-
         $user = User::factory()->create();
-        $this->actingAs($user);
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->create();
 
-        $response = $this->get(route('reading-plans.edit', $plan));
+        $response = $this->actingAs($user)
+            ->get(route('reading-plans.edit', $plan));
 
         $response->assertStatus(200)
             ->assertSee('読書計画編集');
@@ -33,13 +31,12 @@ class ReadingPlanEditTest extends TestCase
         $owner = User::factory()->create();
         $other = User::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $owner->id,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($owner)
+            ->create();
 
-        $this->actingAs($other);
-
-        $response = $this->get("/reading-plans/{$plan->id}/edit");
+        $response = $this->actingAs($other)
+            ->get(route('reading-plans.edit', $plan));
 
         $response->assertStatus(403);
     }

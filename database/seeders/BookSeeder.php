@@ -7,21 +7,34 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
+/**
+ * 書籍データの初期投入を行うシーダー.
+ *
+ * 固定データとして複数の書籍を登録し、
+ * ISBN をキーに firstOrCreate で重複登録を防ぐ。
+ * また、ジャンル名から Genre ID を取得して紐づける。
+ */
 class BookSeeder extends Seeder
 {
+    /**
+     * シーダーの実行.
+     */
     public function run(): void
     {
         $users = User::all();
 
-        if (! $users) {
+        // ユーザーが存在しない場合は処理を中断
+        if ($users->isEmpty()) {
             return;
         }
 
         $books = $this->bookData();
 
-        $allGenres = Genre::pluck('id', 'name');
+        // ['ジャンル名' => id] の形で取得
+        $genreMap = Genre::pluck('id', 'name');
 
         foreach ($books as $index => $data) {
+            // 書籍を ISBN で一意に作成
             $book = Book::firstOrCreate(
                 ['isbn' => $data['isbn']],
                 [
@@ -34,15 +47,22 @@ class BookSeeder extends Seeder
                 ]
             );
 
+            // ジャンル名 → ID に変換
             $genreIds = collect($data['genres'])
-                ->map(fn ($name) => $allGenres[$name] ?? null)
+                ->map(fn ($name) => $genreMap[$name] ?? null)
                 ->filter()
                 ->values();
 
+            // 書籍にジャンルを紐づけ
             $book->genres()->sync($genreIds);
         }
     }
 
+    /**
+     * 初期投入する書籍データ.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     private function bookData(): array
     {
         return [

@@ -16,7 +16,7 @@ class BookEditTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->get("/books/{$book->id}/edit");
+        $response = $this->actingAs($user)->get(route('books.edit', $book));
 
         $response->assertStatus(200)
             ->assertSeeText('書籍の編集');
@@ -28,7 +28,7 @@ class BookEditTest extends TestCase
         $other = User::factory()->create();
         $book = Book::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($other)->get("/books/{$book->id}/edit");
+        $response = $this->actingAs($other)->get(route('books.edit', $book));
 
         $response->assertStatus(403);
     }

@@ -12,19 +12,16 @@ class ReviewLikeTest extends TestCase
 {
     use RefreshDatabase;
 
-    /* ---------------------------------------------------------
-        いいね追加（POST /reviews/{review}/like）
-    --------------------------------------------------------- */
     public function test_認証ユーザーはレビューにいいねできる()
     {
         $user = User::factory()->create();
         $review = Review::factory()->create();
 
         $response = $this->actingAs($user)
-            ->from("/books/{$review->book_id}")
-            ->post("/reviews/{$review->id}/like");
+            ->from(route('books.show', $review->book_id))
+            ->post(route('reviews.like', $review));
 
-        $response->assertRedirect("/books/{$review->book_id}");
+        $response->assertRedirect(route('books.show', $review->book_id));
 
         $this->assertDatabaseHas('review_likes', [
             'user_id' => $user->id,
@@ -36,14 +33,11 @@ class ReviewLikeTest extends TestCase
     {
         $review = Review::factory()->create();
 
-        $response = $this->post("/reviews/{$review->id}/like");
+        $response = $this->post(route('reviews.like', $review));
 
         $response->assertRedirect(route('login'));
     }
 
-    /* ---------------------------------------------------------
-        トグル（いいね → 解除）
-    --------------------------------------------------------- */
     public function test_いいねトグルが正しく動作する()
     {
         $user = User::factory()->create();
@@ -51,10 +45,10 @@ class ReviewLikeTest extends TestCase
 
         // 1回目 → いいね
         $response = $this->actingAs($user)
-            ->from("/books/{$review->book_id}")
-            ->post("/reviews/{$review->id}/like");
+            ->from(route('books.show', $review->book_id))
+            ->post(route('reviews.like', $review));
 
-        $response->assertRedirect("/books/{$review->book_id}");
+        $response->assertRedirect(route('books.show', $review->book_id));
 
         $this->assertDatabaseHas('review_likes', [
             'user_id' => $user->id,
@@ -63,10 +57,10 @@ class ReviewLikeTest extends TestCase
 
         // 2回目 → 解除
         $response = $this->actingAs($user)
-            ->from("/books/{$review->book_id}")
-            ->post("/reviews/{$review->id}/like");
+            ->from(route('books.show', $review->book_id))
+            ->post(route('reviews.like', $review));
 
-        $response->assertRedirect("/books/{$review->book_id}");
+        $response->assertRedirect(route('books.show', $review->book_id));
 
         $this->assertDatabaseMissing('review_likes', [
             'user_id' => $user->id,
@@ -74,23 +68,15 @@ class ReviewLikeTest extends TestCase
         ]);
     }
 
-    /* ---------------------------------------------------------
-        同じユーザーが同じレビューに複数いいねできない
-        → トグルなので2回目は解除される
-    --------------------------------------------------------- */
     public function test_同じレビューに複数回いいねできない()
     {
         $user = User::factory()->create();
         $review = Review::factory()->create();
 
-        ReviewLike::factory()->create([
-            'user_id' => $user->id,
-            'review_id' => $review->id,
-        ]);
+        ReviewLike::factory()->for($user)->for($review)->create();
 
         // 2回目のいいね（トグルなので解除される）
-        $this->actingAs($user)
-            ->post("/reviews/{$review->id}/like");
+        $this->actingAs($user)->post(route('reviews.like', $review));
 
         $this->assertDatabaseMissing('review_likes', [
             'user_id' => $user->id,

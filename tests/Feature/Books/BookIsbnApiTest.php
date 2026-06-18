@@ -32,15 +32,13 @@ class BookIsbnApiTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->get('/books/isbn/9784000000000');
+        $response = $this->get(route('books.searchIsbn', '9784000000000'));
 
         $response->assertStatus(200)
-            ->assertJson([
-                'title' => 'Mock Book',
-                'author' => 'Mock Author',
-                'published_date' => '2020-01-01',
-                'description' => 'Mock description',
-            ]);
+            ->assertJsonPath('title', 'Mock Book')
+            ->assertJsonPath('author', 'Mock Author')
+            ->assertJsonPath('published_date', '2020-01-01')
+            ->assertJsonPath('description', 'Mock description');
     }
 
     public function test_isbn検索_13桁以外は422()
@@ -48,10 +46,10 @@ class BookIsbnApiTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $response = $this->get('/books/isbn/12345');
+        $response = $this->get(route('books.searchIsbn', '12345'));
 
         $response->assertStatus(422)
-            ->assertJson([
+            ->assertExactJson([
                 'error' => 'ISBN を13桁で入力してください',
             ]);
     }
@@ -67,15 +65,15 @@ class BookIsbnApiTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->get('/books/isbn/9784000000000');
+        $response = $this->get(route('books.searchIsbn', '9784000000000'));
 
         $response->assertStatus(404)
-            ->assertJson([
+            ->assertExactJson([
                 'error' => '書籍情報が見つかりませんでした',
             ]);
     }
 
-    public function test_isbn検索_ap_i障害は503()
+    public function test_isbn検索_api障害は503()
     {
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -84,10 +82,10 @@ class BookIsbnApiTest extends TestCase
             'https://www.googleapis.com/books/v1/volumes*' => Http::response(null, 500),
         ]);
 
-        $response = $this->get('/books/isbn/9784000000000');
+        $response = $this->get(route('books.searchIsbn', '9784000000000'));
 
         $response->assertStatus(503)
-            ->assertJson([
+            ->assertExactJson([
                 'error' => '外部APIエラーが発生しました',
             ]);
     }
@@ -103,10 +101,10 @@ class BookIsbnApiTest extends TestCase
             },
         ]);
 
-        $response = $this->get('/books/isbn/9784000000000');
+        $response = $this->get(route('books.searchIsbn', '9784000000000'));
 
         $response->assertStatus(504)
-            ->assertJson([
+            ->assertExactJson([
                 'error' => '外部サービスに接続できませんでした',
             ]);
     }

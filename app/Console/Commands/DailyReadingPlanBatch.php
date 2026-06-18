@@ -8,12 +8,27 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 
+/**
+ * 読書計画のステータス更新 & リマインダー通知を行うデイリーバッチ.
+ *
+ * - pending → overdue への自動更新
+ * - 3日前 / 当日 / 3日後 のリマインダー通知
+ */
 class DailyReadingPlanBatch extends Command
 {
+    /**
+     * コマンド名
+     */
     protected $signature = 'batch:daily-reading-plan';
 
+    /**
+     * コマンド説明
+     */
     protected $description = 'Daily batch: update statuses and send reminder notifications';
 
+    /**
+     * バッチ実行
+     */
     public function handle(): int
     {
         $today = Carbon::today();
@@ -81,17 +96,22 @@ class DailyReadingPlanBatch extends Command
         }
 
         // 通知送信
-        Notification::send($plan->user, new ReadingPlanReminderNotification([
-            'reading_plan_id' => $plan->id,
-            'plan_id' => $plan->id,
-            'book_title' => $plan->book->title,
-            'title' => '読書計画のリマインダー',
-            'body' => $this->buildBody($plan, $timing),
-            'timing' => $timing,
-        ]));
-
+        Notification::send(
+            $plan->user,
+            new ReadingPlanReminderNotification([
+                'reading_plan_id' => $plan->id,
+                'plan_id' => $plan->id,
+                'book_title' => $plan->book->title,
+                'title' => '読書計画のリマインダー',
+                'body' => $this->buildBody($plan, $timing),
+                'timing' => $timing,
+            ])
+        );
     }
 
+    /**
+     * 通知本文を生成
+     */
     private function buildBody(ReadingPlan $plan, string $timing): string
     {
         $title = $plan->book->title;

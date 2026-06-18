@@ -14,24 +14,23 @@ class ReadingPlanIndexTest extends TestCase
 
     public function test_未認証ユーザーは読書計画一覧にアクセスできずログインへリダイレクトされる()
     {
-        $response = $this->get('/reading-plans');
+        $response = $this->get(route('reading-plans.index'));
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('login'));
     }
 
     public function test_認証済みユーザーは読書計画一覧を表示できる()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
-
         $book = Book::factory()->create();
 
-        ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-        ]);
+        ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create();
 
-        $response = $this->get('/reading-plans');
+        $response = $this->actingAs($user)
+            ->get(route('reading-plans.index'));
 
         $response->assertStatus(200)
             ->assertSee($book->title);
@@ -40,25 +39,27 @@ class ReadingPlanIndexTest extends TestCase
     public function test_状態フィルタでpendingのみ表示される()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
 
-        // ← ここを修正（book を2冊作る）
+        // book を2冊作成
         $book1 = Book::factory()->create();
         $book2 = Book::factory()->create();
 
-        $pending = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book1->id,
-            'status' => 'pending',
-        ]);
+        $pending = ReadingPlan::factory()
+            ->for($user)
+            ->for($book1)
+            ->create([
+                'status' => 'pending',
+            ]);
 
-        $completed = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book2->id,
-            'status' => 'completed',
-        ]);
+        $completed = ReadingPlan::factory()
+            ->for($user)
+            ->for($book2)
+            ->create([
+                'status' => 'completed',
+            ]);
 
-        $response = $this->get('/reading-plans?status=pending');
+        $response = $this->actingAs($user)
+            ->get(route('reading-plans.index', ['status' => 'pending']));
 
         $response->assertStatus(200)
             ->assertSee($pending->book->title)

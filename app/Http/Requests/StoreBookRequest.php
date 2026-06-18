@@ -4,27 +4,48 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 書籍登録用リクエスト.
+ *
+ * - title / author / isbn / published_date / description / image_url
+ * - genres（1つ以上必須）
+ */
 class StoreBookRequest extends FormRequest
 {
+    /**
+     * 書籍登録は認証ユーザーのみ許可されるため、
+     * コントローラ側のミドルウェアで制御する。
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルール
+     *
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'isbn' => 'nullable|string|size:13|unique:books,isbn',
-            'published_date' => 'nullable|date',
-            'description' => 'nullable|string|max:2000',
-            'image_url' => 'nullable|url',
-            'genres' => 'required|array|min:1',
-            'genres.*' => 'exists:genres,id',
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'isbn' => ['nullable', 'string', 'size:13', 'unique:books,isbn'],
+            'published_date' => ['nullable', 'date'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'image_url' => ['nullable', 'url'],
+
+            'genres' => ['required', 'array', 'min:1'],
+            'genres.*' => ['exists:genres,id'],
         ];
     }
 
+    /**
+     * カスタムエラーメッセージ
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

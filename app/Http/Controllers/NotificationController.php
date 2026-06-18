@@ -7,12 +7,20 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\View\View;
 
+/**
+ * 通知一覧・既読処理を行うコントローラ.
+ */
 class NotificationController extends Controller
 {
+    /**
+     * 通知一覧
+     */
     public function index(Request $request): View
     {
-        $notifications = DatabaseNotification::where('notifiable_id', $request->user()->id)
-            ->where('notifiable_type', get_class($request->user()))
+        $user = $request->user();
+
+        $notifications = DatabaseNotification::where('notifiable_id', $user->id)
+            ->where('notifiable_type', get_class($user))
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -21,6 +29,9 @@ class NotificationController extends Controller
         ]);
     }
 
+    /**
+     * 通知を既読にする
+     */
     public function markAsRead(Request $request, string $id): RedirectResponse
     {
         // 存在しない場合は 404

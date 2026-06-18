@@ -23,7 +23,7 @@ class BookCrudTest extends TestCase
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
 
-        $response = $this->actingAs($user)->post('/books', [
+        $response = $this->actingAs($user)->post(route('books.store'), [
             'title' => '新しい本',
             'author' => '著者名',
             'isbn' => '1234567890123',
@@ -33,7 +33,7 @@ class BookCrudTest extends TestCase
             'genres' => [$genre->id],
         ]);
 
-        $response->assertRedirect('/books');
+        $response->assertRedirect(route('books.index'));
 
         $this->assertDatabaseHas('books', [
             'title' => '新しい本',
@@ -51,7 +51,7 @@ class BookCrudTest extends TestCase
 
     public function test_未認証ユーザーは書籍を登録できずログインへリダイレクト()
     {
-        $response = $this->post('/books', []);
+        $response = $this->post(route('books.store'), []);
         $response->assertRedirect(route('login'));
     }
 
@@ -64,7 +64,7 @@ class BookCrudTest extends TestCase
         $book = Book::factory()->create(['user_id' => $user->id]);
         $genre = Genre::factory()->create();
 
-        $response = $this->actingAs($user)->put("/books/{$book->id}", [
+        $response = $this->actingAs($user)->put(route('books.update', $book), [
             'title' => '更新後のタイトル',
             'author' => '更新後の著者',
             'isbn' => '1234567890123',
@@ -74,7 +74,7 @@ class BookCrudTest extends TestCase
             'genres' => [$genre->id],
         ]);
 
-        $response->assertRedirect("/books/{$book->id}");
+        $response->assertRedirect(route('books.show', $book));
 
         $this->assertDatabaseHas('books', [
             'id' => $book->id,
@@ -94,7 +94,7 @@ class BookCrudTest extends TestCase
         $book = Book::factory()->create(['user_id' => $user->id]);
         $genre = Genre::factory()->create();
 
-        $response = $this->actingAs($other)->put("/books/{$book->id}", [
+        $response = $this->actingAs($other)->put(route('books.update', $book), [
             'title' => '更新後のタイトル',
             'author' => '更新後の著者',
             'isbn' => '1234567890123',
@@ -115,18 +115,19 @@ class BookCrudTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create(['user_id' => $user->id]);
 
-        $review = Review::factory()->create(['book_id' => $book->id]);
-        Favorite::factory()->create(['book_id' => $book->id]);
-        ReviewLike::factory()->create(['review_id' => $review->id]);
+        $review = Review::factory()->for($book)->create();
+        Favorite::factory()->for($book)->create();
+        ReviewLike::factory()->for($review)->create();
 
-        $response = $this->actingAs($user)->delete("/books/{$book->id}");
+        $response = $this->actingAs($user)->delete(route('books.destroy', $book));
 
-        $response->assertRedirect('/books');
+        $response->assertRedirect(route('books.index'));
 
         $this->assertDatabaseMissing('books', ['id' => $book->id]);
         $this->assertDatabaseMissing('reviews', ['book_id' => $book->id]);
         $this->assertDatabaseMissing('favorites', ['book_id' => $book->id]);
         $this->assertDatabaseMissing('review_likes', ['review_id' => $review->id]);
+        $this->assertDatabaseMissing('book_genre', ['book_id' => $book->id]);
     }
 
     public function test_作成者以外は書籍を削除できず403()
@@ -135,7 +136,8 @@ class BookCrudTest extends TestCase
         $other = User::factory()->create();
         $book = Book::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($other)->delete("/books/{$book->id}");
+        $response = $this->actingAs($other)->delete(route('books.destroy', $book));
+
         $response->assertStatus(403);
     }
 }

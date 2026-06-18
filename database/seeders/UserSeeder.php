@@ -6,8 +6,16 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * 初期ユーザーデータを投入するシーダー.
+ *
+ * 固定のユーザー情報を email をキーに firstOrCreate で登録する。
+ */
 class UserSeeder extends Seeder
 {
+    /**
+     * シーディングの実行.
+     */
     public function run(): void
     {
         collect([
@@ -16,7 +24,7 @@ class UserSeeder extends Seeder
             ['name' => '田中一郎', 'email' => 'tanaka@example.com'],
             ['name' => '佐藤美咲', 'email' => 'sato@example.com'],
             ['name' => '高橋健太', 'email' => 'takahashi@example.com'],
-        ])->each(function (array $user) {
+        ])->each(function (array $user): void {
             User::firstOrCreate(
                 ['email' => $user['email']],
                 [

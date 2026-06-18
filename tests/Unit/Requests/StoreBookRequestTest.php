@@ -26,12 +26,10 @@ class StoreBookRequestTest extends TestCase
         $this->assertTrue($validator->fails());
         $this->assertArrayHasKey('title', $validator->errors()->messages());
         $this->assertArrayHasKey('author', $validator->errors()->messages());
-        // $this->assertArrayHasKey('isbn', $validator->errors()->messages()); // 応用要件で nullable
-        // $this->assertArrayHasKey('published_date', $validator->errors()->messages()); // 応用要件で nullable
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 
-    public function test_isb_nが13桁でない場合はエラー()
+    public function test_isbnが13桁でない場合はエラーになる()
     {
         $validator = $this->validate([
             'isbn' => '123',
@@ -41,7 +39,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('isbn', $validator->errors()->messages());
     }
 
-    public function test_image_urlが不正な_ur_lならエラー()
+    public function test_image_urlが不正な形式ならエラーになる()
     {
         $validator = $this->validate([
             'image_url' => 'invalid-url',
@@ -51,7 +49,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('image_url', $validator->errors()->messages());
     }
 
-    public function test_genresが配列でない場合はエラー()
+    public function test_genresが配列でない場合はエラーになる()
     {
         $validator = $this->validate([
             'genres' => 'not-array',
@@ -61,7 +59,7 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('genres', $validator->errors()->messages());
     }
 
-    public function test_genresの要素が存在しない_i_dならエラー()
+    public function test_genresの要素が存在しないidならエラーになる()
     {
         $validator = $this->validate([
             'genres' => [999],
@@ -71,10 +69,10 @@ class StoreBookRequestTest extends TestCase
         $this->assertArrayHasKey('genres.0', $validator->errors()->messages());
     }
 
-    public function test_正しいデータならバリデーション成功()
+    public function test_正しいデータならバリデーション成功する()
     {
-        $genre1 = Genre::factory()->create(['name' => 'ジャンルA']);
-        $genre2 = Genre::factory()->create(['name' => 'ジャンルB']);
+        $genre1 = Genre::factory()->create();
+        $genre2 = Genre::factory()->create();
 
         $validator = $this->validate([
             'title' => 'タイトル',

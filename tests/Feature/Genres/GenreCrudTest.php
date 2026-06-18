@@ -20,7 +20,7 @@ class GenreCrudTest extends TestCase
         $user = User::factory()->create();
         Genre::factory()->create(['name' => '宇宙']);
 
-        $response = $this->actingAs($user)->get('/genres');
+        $response = $this->actingAs($user)->get(route('genres.index'));
 
         $response->assertStatus(200)
             ->assertSeeText('宇宙');
@@ -28,7 +28,7 @@ class GenreCrudTest extends TestCase
 
     public function test_未認証ユーザーはジャンル一覧にアクセスできずログインへリダイレクト()
     {
-        $response = $this->get('/genres');
+        $response = $this->get(route('genres.index'));
 
         $response->assertRedirect(route('login'));
     }
@@ -40,11 +40,11 @@ class GenreCrudTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/genres', [
+        $response = $this->actingAs($user)->post(route('genres.store'), [
             'name' => 'ミステリー',
         ]);
 
-        $response->assertRedirect('/genres');
+        $response->assertRedirect(route('genres.index'));
 
         $this->assertDatabaseHas('genres', [
             'name' => 'ミステリー',
@@ -53,7 +53,7 @@ class GenreCrudTest extends TestCase
 
     public function test_未認証ユーザーはジャンル登録できずログインへリダイレクト()
     {
-        $response = $this->post('/genres', []);
+        $response = $this->post(route('genres.store'), []);
 
         $response->assertRedirect(route('login'));
     }
@@ -66,7 +66,7 @@ class GenreCrudTest extends TestCase
         $user = User::factory()->create();
         $genre = Genre::factory()->create(['name' => '宇宙']);
 
-        $response = $this->actingAs($user)->get("/genres/{$genre->id}");
+        $response = $this->actingAs($user)->get(route('genres.show', $genre));
 
         $response->assertStatus(200)
             ->assertSeeText('宇宙');
@@ -76,7 +76,7 @@ class GenreCrudTest extends TestCase
     {
         $genre = Genre::factory()->create();
 
-        $response = $this->get("/genres/{$genre->id}");
+        $response = $this->get(route('genres.show', $genre));
 
         $response->assertRedirect(route('login'));
     }
@@ -89,11 +89,11 @@ class GenreCrudTest extends TestCase
         $user = User::factory()->create();
         $genre = Genre::factory()->create(['name' => '旧ジャンル']);
 
-        $response = $this->actingAs($user)->put("/genres/{$genre->id}", [
+        $response = $this->actingAs($user)->put(route('genres.update', $genre), [
             'name' => '新ジャンル',
         ]);
 
-        $response->assertRedirect('/genres');
+        $response->assertRedirect(route('genres.index'));
 
         $this->assertDatabaseHas('genres', [
             'id' => $genre->id,
@@ -105,7 +105,7 @@ class GenreCrudTest extends TestCase
     {
         $genre = Genre::factory()->create();
 
-        $response = $this->put("/genres/{$genre->id}", [
+        $response = $this->put(route('genres.update', $genre), [
             'name' => '不正更新',
         ]);
 
@@ -120,9 +120,9 @@ class GenreCrudTest extends TestCase
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
 
-        $response = $this->actingAs($user)->delete("/genres/{$genre->id}");
+        $response = $this->actingAs($user)->delete(route('genres.destroy', $genre));
 
-        $response->assertRedirect('/genres');
+        $response->assertRedirect(route('genres.index'));
 
         $this->assertDatabaseMissing('genres', [
             'id' => $genre->id,
@@ -134,11 +134,12 @@ class GenreCrudTest extends TestCase
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
         $book = Book::factory()->create();
-        $book->genres()->attach($genre->id);
 
-        $response = $this->actingAs($user)->delete("/genres/{$genre->id}");
+        $book->genres()->sync([$genre->id]);
 
-        $response->assertRedirect('/genres');
+        $response = $this->actingAs($user)->delete(route('genres.destroy', $genre));
+
+        $response->assertRedirect(route('genres.index'));
         $response->assertSessionHas('error');
 
         $this->assertDatabaseHas('genres', [
@@ -150,7 +151,7 @@ class GenreCrudTest extends TestCase
     {
         $genre = Genre::factory()->create();
 
-        $response = $this->delete("/genres/{$genre->id}");
+        $response = $this->delete(route('genres.destroy', $genre));
 
         $response->assertRedirect(route('login'));
     }

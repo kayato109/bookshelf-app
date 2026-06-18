@@ -14,15 +14,15 @@ class ReadingPlanDeleteTest extends TestCase
     public function test_所有者は読書計画を削除できる()
     {
         $user = User::factory()->create();
-        $this->actingAs($user);
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->create();
 
-        $response = $this->delete("/reading-plans/{$plan->id}");
+        $response = $this->actingAs($user)
+            ->delete(route('reading-plans.destroy', $plan));
 
-        $response->assertRedirect('/reading-plans');
+        $response->assertRedirect(route('reading-plans.index'));
 
         $this->assertDatabaseMissing('reading_plans', [
             'id' => $plan->id,
@@ -34,13 +34,12 @@ class ReadingPlanDeleteTest extends TestCase
         $owner = User::factory()->create();
         $other = User::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $owner->id,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($owner)
+            ->create();
 
-        $this->actingAs($other);
-
-        $response = $this->delete("/reading-plans/{$plan->id}");
+        $response = $this->actingAs($other)
+            ->delete(route('reading-plans.destroy', $plan));
 
         $response->assertStatus(403);
     }

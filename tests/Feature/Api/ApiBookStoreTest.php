@@ -28,7 +28,6 @@ class ApiBookStoreTest extends TestCase
         $genre2 = Genre::factory()->create(['name' => 'ジャンルB']);
 
         $payload = [
-            // user_id は送らない（API 側で上書きされるため）
             'title' => '新しい本',
             'author' => '新しい著者',
             'isbn' => '9781234567890',
@@ -40,14 +39,14 @@ class ApiBookStoreTest extends TestCase
 
         $response = $this->postJson('/api/v1/books', $payload);
 
-        $response->assertStatus(201)
+        $response->assertCreated()
             ->assertJsonPath('data.title', '新しい本');
 
         // DB に保存されていること
         $this->assertDatabaseHas('books', [
             'title' => '新しい本',
             'isbn' => '9781234567890',
-            'user_id' => $user->id, // 認証ユーザーが owner
+            'user_id' => $user->id,
         ]);
 
         // 中間テーブルも確認
@@ -76,9 +75,6 @@ class ApiBookStoreTest extends TestCase
         $response = $this->postJson('/api/v1/books', $payload);
 
         $response->assertStatus(422)
-            ->assertJsonStructure([
-                'message',
-                'errors' => ['title'],
-            ]);
+            ->assertJsonValidationErrors(['title']);
     }
 }

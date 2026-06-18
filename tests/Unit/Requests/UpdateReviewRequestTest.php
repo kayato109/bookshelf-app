@@ -15,10 +15,15 @@ class UpdateReviewRequestTest extends TestCase
     {
         $request = new UpdateReviewRequest;
 
-        return Validator::make($data, $request->rules(), $request->messages());
+        return Validator::make(
+            $data,
+            $request->rules(),
+            $request->messages(),
+            [] // 属性名置き換え（今回は空でOK）
+        );
     }
 
-    public function test_ratingが1から5以外はエラー()
+    public function test_ratingが1から5以外ならエラーになる()
     {
         $validator = $this->validate([
             'rating' => 0,
@@ -29,7 +34,7 @@ class UpdateReviewRequestTest extends TestCase
         $this->assertArrayHasKey('rating', $validator->errors()->messages());
     }
 
-    public function test_commentが必須である()
+    public function test_commentが必須であること()
     {
         $validator = $this->validate([
             'rating' => 3,
@@ -39,7 +44,7 @@ class UpdateReviewRequestTest extends TestCase
         $this->assertArrayHasKey('comment', $validator->errors()->messages());
     }
 
-    public function test_commentが2000文字以内である()
+    public function test_commentが2000文字以内でない場合はエラーになる()
     {
         $validator = $this->validate([
             'rating' => 3,
@@ -50,7 +55,7 @@ class UpdateReviewRequestTest extends TestCase
         $this->assertArrayHasKey('comment', $validator->errors()->messages());
     }
 
-    public function test_正常データは通過する()
+    public function test_正常データならバリデーション成功する()
     {
         $validator = $this->validate([
             'rating' => 5,

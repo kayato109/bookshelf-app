@@ -13,19 +13,19 @@ class ReviewCrudTest extends TestCase
     use RefreshDatabase;
 
     /* ---------------------------------------------------------
-        レビュー投稿（POST /reviews）
+        レビュー投稿（POST /books/{book}/reviews）
     --------------------------------------------------------- */
     public function test_認証ユーザーはレビューを投稿できる()
     {
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $response = $this->actingAs($user)->post("/books/{$book->id}/reviews", [
+        $response = $this->actingAs($user)->post(route('reviews.store', $book), [
             'rating' => 5,
             'comment' => '最高の本でした！',
         ]);
 
-        $response->assertRedirect("/books/{$book->id}");
+        $response->assertRedirect(route('books.show', $book));
 
         $this->assertDatabaseHas('reviews', [
             'book_id' => $book->id,
@@ -39,7 +39,7 @@ class ReviewCrudTest extends TestCase
     {
         $book = Book::factory()->create();
 
-        $response = $this->post("/books/{$book->id}/reviews", [
+        $response = $this->post(route('reviews.store', $book), [
             'rating' => 5,
             'comment' => 'テスト',
         ]);
@@ -53,9 +53,9 @@ class ReviewCrudTest extends TestCase
     public function test_作成者はレビュー編集画面を表示できる()
     {
         $user = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->get("/reviews/{$review->id}/edit");
+        $response = $this->actingAs($user)->get(route('reviews.edit', $review));
 
         $response->assertStatus(200)
             ->assertSeeText('レビューの編集');
@@ -65,9 +65,9 @@ class ReviewCrudTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($other)->get("/reviews/{$review->id}/edit");
+        $response = $this->actingAs($other)->get(route('reviews.edit', $review));
 
         $response->assertStatus(403);
     }
@@ -78,14 +78,14 @@ class ReviewCrudTest extends TestCase
     public function test_作成者はレビューを更新できる()
     {
         $user = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->put("/reviews/{$review->id}", [
+        $response = $this->actingAs($user)->put(route('reviews.update', $review), [
             'rating' => 4,
             'comment' => '更新後のコメント',
         ]);
 
-        $response->assertRedirect("/books/{$review->book_id}");
+        $response->assertRedirect(route('books.show', $review->book_id));
 
         $this->assertDatabaseHas('reviews', [
             'id' => $review->id,
@@ -98,9 +98,9 @@ class ReviewCrudTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($other)->put("/reviews/{$review->id}", [
+        $response = $this->actingAs($other)->put(route('reviews.update', $review), [
             'rating' => 3,
             'comment' => '不正更新',
         ]);
@@ -114,11 +114,11 @@ class ReviewCrudTest extends TestCase
     public function test_作成者はレビューを削除できる()
     {
         $user = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->delete("/reviews/{$review->id}");
+        $response = $this->actingAs($user)->delete(route('reviews.destroy', $review));
 
-        $response->assertRedirect("/books/{$review->book_id}");
+        $response->assertRedirect(route('books.show', $review->book_id));
 
         $this->assertDatabaseMissing('reviews', [
             'id' => $review->id,
@@ -129,9 +129,9 @@ class ReviewCrudTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $review = Review::factory()->create(['user_id' => $user->id]);
+        $review = Review::factory()->for($user)->create();
 
-        $response = $this->actingAs($other)->delete("/reviews/{$review->id}");
+        $response = $this->actingAs($other)->delete(route('reviews.destroy', $review));
 
         $response->assertStatus(403);
     }

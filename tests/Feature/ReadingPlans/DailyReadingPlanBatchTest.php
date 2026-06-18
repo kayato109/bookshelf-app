@@ -28,16 +28,17 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'pending',
-            'target_date' => Carbon::today()->addDays(3)->toDateString(),
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'pending',
+                'target_date' => Carbon::today()->addDays(3)->toDateString(),
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 
-        $notification = $user->notifications()->first();
+        $notification = $user->notifications()->latest()->first();
         $this->assertNotNull($notification);
 
         $data = $notification->data;
@@ -50,16 +51,17 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'pending',
-            'target_date' => Carbon::today()->toDateString(),
-        ]);
+        ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'pending',
+                'target_date' => Carbon::today()->toDateString(),
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 
-        $notification = $user->notifications()->first();
+        $notification = $user->notifications()->latest()->first();
         $this->assertNotNull($notification);
 
         $data = $notification->data;
@@ -71,16 +73,17 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'overdue',
-            'target_date' => Carbon::today()->subDays(3)->toDateString(),
-        ]);
+        ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'overdue',
+                'target_date' => Carbon::today()->subDays(3)->toDateString(),
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 
-        $notification = $user->notifications()->first();
+        $notification = $user->notifications()->latest()->first();
         $this->assertNotNull($notification);
 
         $data = $notification->data;
@@ -92,12 +95,13 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'pending',
-            'target_date' => Carbon::today()->addDays(3)->toDateString(),
-        ]);
+        ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'pending',
+                'target_date' => Carbon::today()->addDays(3)->toDateString(),
+            ]);
 
         // 1回目
         Artisan::call('batch:daily-reading-plan');
@@ -113,22 +117,19 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'pending',
-            'target_date' => Carbon::today()->subDay()->toDateString(),
-            'completed_at' => null,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'pending',
+                'target_date' => Carbon::today()->subDay()->toDateString(),
+                'completed_at' => null,
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 
         $plan->refresh();
-        $this->assertSame(
-            ReadingPlanStatus::Overdue,
-            $plan->status
-        );
-
+        $this->assertSame(ReadingPlanStatus::Overdue, $plan->status);
     }
 
     public function test_completedの計画は期限切れ更新の対象外()
@@ -136,13 +137,14 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'completed',
-            'target_date' => Carbon::today()->subDay()->toDateString(),
-            'completed_at' => Carbon::yesterday(),
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'completed',
+                'target_date' => Carbon::today()->subDay()->toDateString(),
+                'completed_at' => Carbon::yesterday(),
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 
@@ -155,13 +157,14 @@ class DailyReadingPlanBatchTest extends TestCase
         $user = User::factory()->create();
         $book = Book::factory()->create();
 
-        $plan = ReadingPlan::factory()->create([
-            'user_id' => $user->id,
-            'book_id' => $book->id,
-            'status' => 'overdue',
-            'target_date' => Carbon::today()->subDay()->toDateString(),
-            'completed_at' => null,
-        ]);
+        $plan = ReadingPlan::factory()
+            ->for($user)
+            ->for($book)
+            ->create([
+                'status' => 'overdue',
+                'target_date' => Carbon::today()->subDay()->toDateString(),
+                'completed_at' => null,
+            ]);
 
         Artisan::call('batch:daily-reading-plan');
 

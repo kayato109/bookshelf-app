@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * review_likes テーブルを作成するマイグレーション.
+     *
+     * ユーザーが「いいね」したレビューとの関係を管理する。
      */
     public function up(): void
     {
-        Schema::create('review_likes', function (Blueprint $table) {
+        Schema::create('review_likes', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignId('review_id')
@@ -29,7 +31,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the review_likes table.
      */
     public function down(): void
     {

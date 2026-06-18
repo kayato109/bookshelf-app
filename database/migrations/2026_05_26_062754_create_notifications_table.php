@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * notifications テーブルを作成するマイグレーション.
+     *
+     * Laravel の DatabaseChannel で使用される通知データを保存する。
+     * notifiable はポリモーフィックリレーションで、任意のモデルに紐づく。
      */
     public function up(): void
     {

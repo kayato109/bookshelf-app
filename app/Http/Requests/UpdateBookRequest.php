@@ -5,35 +5,57 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * 書籍更新用リクエスト.
+ *
+ * - ISBN は「自分以外で unique」
+ * - genres は 1 つ以上必須
+ */
 class UpdateBookRequest extends FormRequest
 {
+    /**
+     * 書籍更新は認証・権限チェックを
+     * コントローラ側の authorize() で行うため true。
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルール
+     *
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
+        $bookId = $this->route('book')->id;
+
         return [
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
 
             'isbn' => [
                 'nullable',
                 'string',
                 'size:13',
-                Rule::unique('books', 'isbn')->ignore($this->route('book')->id),
+                Rule::unique('books', 'isbn')->ignore($bookId),
             ],
 
-            'published_date' => 'nullable|date',
-            'description' => 'nullable|string|max:2000',
-            'image_url' => 'nullable|url',
+            'published_date' => ['nullable', 'date'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'image_url' => ['nullable', 'url'],
 
-            'genres' => 'required|array|min:1',
-            'genres.*' => 'exists:genres,id',
+            'genres' => ['required', 'array', 'min:1'],
+            'genres.*' => ['exists:genres,id'],
         ];
     }
 
+    /**
+     * カスタムエラーメッセージ
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

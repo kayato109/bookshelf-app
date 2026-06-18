@@ -8,12 +8,16 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
+ * Favorite モデルのファクトリ.
+ *
+ * ユーザーがお気に入り登録した書籍データを生成する。
+ *
  * @extends Factory<Favorite>
  */
 class FavoriteFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * モデルのデフォルト状態を定義.
      *
      * @return array<string, mixed>
      */

@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * genres テーブルを作成するマイグレーション.
+     *
+     * ジャンル名を管理するためのテーブル。
      */
     public function up(): void
     {
-        Schema::create('genres', function (Blueprint $table) {
+        Schema::create('genres', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
@@ -19,7 +21,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Drop the genres table.
      */
     public function down(): void
     {

@@ -4,13 +4,29 @@ namespace App\Http\Requests\Api\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * 書籍登録 API のバリデーションリクエスト.
+ *
+ * - title / author: 必須
+ * - isbn: 13桁・ユニーク
+ * - genres: 必須・配列・各要素は genres.id に存在
+ */
 class StoreBookRequest extends FormRequest
 {
+    /**
+     * 書籍登録は認証ユーザーのみ許可されるため、
+     * コントローラ側のミドルウェアで制御する。
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルール
+     *
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
@@ -25,6 +41,11 @@ class StoreBookRequest extends FormRequest
         ];
     }
 
+    /**
+     * 属性名（エラーメッセージ用）
+     *
+     * @return array<string, string>
+     */
     public function attributes(): array
     {
         return [
