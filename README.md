@@ -1,66 +1,209 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BookShelf 書籍レビューアプリ
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+書籍の検索・レビュー投稿・読書計画管理・レポート分析など、  
+読書体験をより豊かにするための Web アプリケーションです。  
+Laravel / MySQL / Docker（Laravel Sail）を使用して構築されています。
 
-## About Laravel
+## 概要
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+BookShelf は以下の機能を備えた書籍レビューアプリです。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 書籍検索（Google Books API）
+- レビュー投稿・編集・削除
+- レビューへのいいね機能
+- 読書計画（ReadingPlan）の作成・編集・削除
+- 読書計画のリマインダー通知（Database Notification）
+- 日次バッチ処理（Scheduler + Console Command）
+- マイレポート（統計・評価分布・ジャンル傾向）
+- 公開 API（Laravel Sanctum 認証）
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ER 図
 
-## Learning Laravel
+![ER図](public/bookshelf-app-ER図.png)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 環境構築手順（Laravel Sail）
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1.  リポジトリをクローン
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    ```bash
+    git clone https://github.com/kayato109/bookshelf-app
+    cd bookshelf-app
+    ```
 
-## Laravel Sponsors
+2.  .env を作成
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    ```bash
+    cp .env.example .env
+    ```
 
-### Premium Partners
+    .env 内の DB 設定が以下になっていることを確認してください。
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    ```ini
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=sail
+    DB_PASSWORD=password
+    ```
 
-## Contributing
+    ※ DB_HOST は localhost ではなく mysql（コンテナ名）を指定します。
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3.  Google Books API キーを設定
 
-## Code of Conduct
+    .envの最後の行に各自で取得したAPIキーを入力してください。
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```ini
+    GOOGLE_BOOKS_API_KEY = [取得したAPIキーを入力]
+    ```
 
-## Security Vulnerabilities
+    ※Google Books API キー取得手順(https://developers.google.com/books/docs/v1/using?hl=ja)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4.  Composer依存パッケージのインストール
 
-## License
+    プロジェクトの初回セットアップ時は、`vendor` ディレクトリが存在しないため `sail` コマンドを使用できません。
+    以下のDockerコマンドを実行して、コンテナ内で `composer install` を実行します。
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+        docker run --rm \
+            -u "$(id -u):$(id -g)" \
+            -v "$(pwd):/var/www/html" \
+            -w /var/www/html \
+            laravelsail/php82-composer:latest \
+            composer install
+    ```
+
+    ※ 注意
+    上記の docker run コマンドは改行を含むため、行末の `\` も含めて正しくコピーしてください。  
+    もしうまく動かない場合は、1 行版を使用してください。
+
+【1 行版】
+
+```bash
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/var/www/html" -w /var/www/html laravelsail/php82-composer:latest composer install
+```
+
+5.  Laravel Sailの起動
+
+    以下のコマンドでDockerコンテナを起動します。
+
+    ```bash
+    ./vendor/bin/sail up -d
+    ```
+
+    > エイリアスの設定（推奨）
+    >
+    > 毎回 `./vendor/bin/sail` と入力するのは手間なので、エイリアスを設定すると便利です。
+    >
+    > ```bash
+    > alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
+    > ```
+
+6.  アプリケーションキーの生成
+
+    ```bash
+    sail artisan key:generate
+    ```
+
+    ※ 注意
+
+    APP_KEY を生成した後は、Sail 全体を再起動しないと
+    MySQL コンテナとの接続が不安定になる場合があります。
+
+    以下のコマンドで再起動してください。
+
+    ```bash
+    sail down
+    sail up -d
+    ```
+
+7.  マイグレーション & シーディング
+    以下のコマンドでテーブルを作成し、ダミーデータを投入します。
+
+    ```bash
+    sail artisan migrate:fresh --seed
+    ```
+
+8.  フロントエンドのビルド
+
+    ```bash
+    sail npm install
+    sail npm install alpinejs
+    sail npm run dev
+    ```
+
+    `npm run dev` は開発中は起動したままにしてください。
+
+9.  動作確認
+    http://localhost にアクセス
+
+## テスト実行
+
+```bash
+sail artisan test
+```
+
+カバレッジ付きで実行する場合:
+
+```bash
+sail artisan test --coverage
+```
+
+## 日次バッチ処理（通知発行）の実行方法
+
+本アプリでは、読書計画のリマインダー通知を
+Laravel のスケジューラ（Scheduler）と Console Command で実行しています。
+
+通常は毎日 0:00（JST）に自動実行されますが、
+ローカル環境では以下のコマンドで手動実行できます。
+
+### 手動でバッチ処理を実行する
+
+```bash
+sail artisan batch:daily-reading-plan
+```
+
+## 使用技術
+
+- PHP 8.2
+- Laravel 10.x
+- MySQL 8.4
+- Docker / Laravel Sail
+- Laravel Sanctum
+- Laravel Notifications
+- Laravel Scheduler
+- PHPUnit
+- Laravel Pint
+- Google Books API
+
+## API エンドポイント一覧（Sanctum 認証）
+
+### 認証方式
+
+Authorization: Bearer {token}
+Accept: application/json
+
+### Books API
+
+| メソッド | パス                 | 認証            | 概要                     |
+| -------- | -------------------- | --------------- | ------------------------ |
+| GET      | /api/v1/books        | 不要            | 書籍一覧を取得           |
+| GET      | /api/v1/books/{book} | 不要            | 書籍詳細を取得           |
+| POST     | /api/v1/books        | 必要（Sanctum） | 書籍を新規登録           |
+| PUT      | /api/v1/books/{book} | 必要（Sanctum） | 書籍を更新（所有者のみ） |
+| DELETE   | /api/v1/books/{book} | 必要（Sanctum） | 書籍を削除（所有者のみ） |
+
+## 開発環境 URL
+
+アプリ: http://localhost
+phpMyAdmin: http://localhost:8080
+
+## 作成者
+
+- 名前：上木屋　陽斗
+
+## 補足
+
+- 日時バッチ処理の定刻は毎日JST（UTC+9）0:00 に設定
+- Google Books API キーは以下のURLにて各自で取得し、環境手順の3.に従って入力してください
+- https://console.cloud.google.com
